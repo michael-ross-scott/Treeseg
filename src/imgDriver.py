@@ -4,12 +4,32 @@ import pandas as pd
 import h5py
 import matplotlib.pyplot as plt
 
+from src import smallScale, medScale, lrgScale
+
 
 def main():
     global image_data_root
     image_data_root = sys.argv[1]
 
+    transforms = sys.argv[3:]
+
     image_paths = get_image_paths()
+
+    for image_path in image_paths:
+        image = get_annotated_image(image_path)
+
+        if 'lab' in transforms:
+            smallScale.lab_transform(image)
+        if 'hsi' in transforms:
+            smallScale.hsi_transform(image)
+        if 'mean_shift' in transforms:
+            medScale.mean_shift_transform(image)
+        if 'edge_detector' in transforms:
+            medScale.edge_detector_transform(image)
+        if 'hough' in transforms:
+            lrgScale.hough_transform(image)
+        if 'template' in transforms:
+            lrgScale.template_transform(image)
 
 
 def get_image_paths():
