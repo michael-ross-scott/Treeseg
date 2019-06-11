@@ -11,7 +11,8 @@ def main():
     global image_data_root
     image_data_root = sys.argv[1]
 
-    transforms = sys.argv[3:]
+    transforms = sys.argv[2:]
+    print("Performing transforms for: %s" % transforms)
 
     image_paths = get_image_paths()
 
@@ -49,5 +50,6 @@ def get_image_paths():
 def get_annotated_image(image_path):
     true_path = "%s/%s" % (image_data_root, image_path)
     return h5py.File(true_path, 'r')
+
 
 main()
