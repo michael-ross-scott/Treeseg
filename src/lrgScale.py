@@ -1,11 +1,22 @@
 import cv2
 import numpy as np
+from PIL import Image
+import h5py
 
+# Might be a good resource: https://stackoverflow.com/questions/52394252/convert-h5-file-to-jpg-with-python
 
-# TODO need to get format into h5 files
-def hough_transform(image):
-    # Read image, cwd is in Treeseg
-    img = cv2.imread("Dave", cv2.IMREAD_COLOR)  # road.png is the filename
+# TODO: Do this with actual files instead of filenames
+def convertImage(hdf5_image):
+    hdf = h5py.File("Sample.h5", 'r')
+    array = hdf["Photos/Image 1"][:]
+    img = Image.fromarray(array.astype('uint8'), 'RGB')
+    img.save("yourimage.thumbnail", "PNG")
+    return img
+
+def hough_transform(hdf5_image):
+    image = convertImage(hdf5_image)
+    # TODO: Still need to check whether this works
+    img = cv2.imread(image, cv2.IMREAD_COLOR)  # road.png is the filename
     # Convert the image to gray-scale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Find the edges in the image using canny detector
@@ -22,7 +33,7 @@ def hough_transform(image):
 
 # TODO template matching with hd5 format
 def template_transform(image):
-    img_rgb = cv2.imread('Dave.png')
+    img_rgb = cv2.imread(image)
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
     template = cv2.imread('template.png', 0)
     w, h = template.shape[::-1]
@@ -35,3 +46,6 @@ def template_transform(image):
 
     cv2.imwrite('Image.png', img_rgb)
 
+# TODO need to output files to directories
+def writeFiles():
+    pass
