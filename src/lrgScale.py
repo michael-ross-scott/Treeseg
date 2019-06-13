@@ -13,6 +13,7 @@ def convertImage(hdf5_image):
     img.save("yourimage.thumbnail", "PNG")
     return img
 
+# TODO: Need to check if this works
 def hough_transform(hdf5_image):
     image = convertImage(hdf5_image)
     # TODO: Still need to check whether this works
