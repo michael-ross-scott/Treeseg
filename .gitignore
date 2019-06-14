@@ -1,3 +1,7 @@
 .idea
 src/__pycache__/
 venv
+*.h5
+*.jpg
+apricot/requirements.txt
+apricot/segmentation.ipynb
