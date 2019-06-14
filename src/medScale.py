@@ -17,7 +17,7 @@ def mean_shift_transform(image):
 
 
 def edge_detector_transform(image):
-    image_filtered = np.convolve(image, gaussian_kernel(5, sigma=1.4))
+    image_filtered = convolve(image, gaussian_kernel(5, sigma=1.4))
     grad, theta = sobel_filters(image_filtered)
     image_nms = non_max_suppression(grad, theta)
     image_thresh, weak, strong = threshold(image_nms, lowThresholdRatio=0.07, highThresholdRatio=0.19)
