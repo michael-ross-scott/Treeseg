@@ -4,7 +4,6 @@ To set up venv in Ubuntu:
 
 `virtualenv venv && source venv/bin/activate && pip install -r requirements.txt`
 
-
 ## Usage
 Data to be processed should be next to this repo.
 
@@ -27,3 +26,12 @@ Output images will be stored in `img/`, keeping their original structure
 - HSI colorspace
 
 Implemented using `skimage`, saved into a numpy array binary format for import into TensorFlow.
+
+## Troubleshooting
+
+If you run into this [issue](https://github.com/pandas-dev/pandas/issues/19666):
+
+`pip uninstall h5py` 
+</br>
+
+`pip install h5py==2.8.0rc1`
