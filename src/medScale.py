@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
+from os.path import relpath
+from os import makedirs
+import re
 
 def mean_shift_transform(image):
     cap = cv.VideoCapture('slow.flv')
@@ -39,12 +41,40 @@ def mean_shift_transform(image):
     cap.release()
 
 def edge_detector_transform(image):
-    image = cv.imread('C:/Users/charl_6lfr58n/Documents/GitHub/apricot/14910/2019-05-10-08-53-40/14.jpg', 0)
-    edges = cv.Canny(image, 100, 400)
+    # Get the raw RGB values from the hdf5 image
+    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
+    rgb_image = np.asarray(rgb_image)
 
-    plt.subplot(121), plt.imshow(image, cmap='gray')
-    plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-    plt.subplot(122), plt.imshow(edges, cmap='gray')
-    plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+    #Convert to Canny Edge Detector
+    #image = cv.imread('C:/Users/charl_6lfr58n/Documents/GitHub/apricot/14910/2019-05-10-08-53-40/14.jpg', 0)
+    edge_detector_image = cv.Canny(rgb_image, 100, 200)
+    print(edge_detector_image)
+    save_nmp_array(image, edge_detector_image, 'edge_detector')
 
-    plt.show()
+    #plt.subplot(121), plt.imshow(image, cmap='gray')
+    #plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+    #plt.subplot(122), plt.imshow(edge_detector_image, cmap='gray')
+    #plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+
+    #plt.show()
+
+#Stolen from Fudges
+def save_nmp_array(hd5image, new_image, folder):
+    # Get relative path for output directory, minus the file extension
+    rel_path = relpath(hd5image.filename)[14:-3]
+
+    # Work out which parent directories need to be created before writing the file
+    try:
+        #directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).groups(1)
+        directory_to_make = rel_path
+    except:
+        raise Exception("Invalid directory path")
+
+    # Make the parent directories
+    print(directory_to_make)
+    print(folder)
+    makedirs("../img/%s/%s" % (folder, directory_to_make), exist_ok=True)
+
+    # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
+    # We will also need a way of either saving the tree masks, or retrieving them from the original image
+    np.save("../img/%s/%s%s" % (folder, rel_path, '.npy'), new_image)

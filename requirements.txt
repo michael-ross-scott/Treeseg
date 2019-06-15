@@ -4,3 +4,5 @@ pandas==0.24.1
 
 matplotlib
 opencv-python
+
+scikit-image

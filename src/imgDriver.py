@@ -29,7 +29,7 @@ def main():
         if 'mean_shift' in transforms:
             medScale.mean_shift_transform(image)
         if 'edge_detector' in transforms:
-            medScale.edge_detector_transform(image_path)
+            medScale.edge_detector_transform(image)
         if 'hough' in transforms:
             lrgScale.hough_transform(image)
         if 'template' in transforms:
