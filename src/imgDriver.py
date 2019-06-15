@@ -1,8 +1,7 @@
 import sys
-import random
 import pandas as pd
 import h5py
-#import matplotlib.pyplot as plt
+import datetime
 
 from src import smallScale, medScale, lrgScale
 
@@ -17,7 +16,10 @@ def main():
 
     image_paths = get_image_paths()
 
+    start_time = datetime.datetime.now()
+    i = 0
     for image_path in image_paths:
+        i+=1
         image = get_annotated_image(image_path)
 
         if 'lab' in transforms:
@@ -27,12 +29,13 @@ def main():
         if 'mean_shift' in transforms:
             medScale.mean_shift_transform(image)
         if 'edge_detector' in transforms:
-            medScale.edge_detector_transform(image)
+            medScale.edge_detector_transform(image_path)
         if 'hough' in transforms:
             lrgScale.hough_transform(image)
         if 'template' in transforms:
             lrgScale.template_transform(image)
-
+        print("Completed image %d" % i)
+    print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
 def get_image_paths():
     print("Getting manifest.hd5 at: %s/manifest.md5" % image_data_root)
