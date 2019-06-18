@@ -5,6 +5,7 @@ pandas==0.24.1
 //Charl
 matplotlib
 opencv-python
+scikit-learn
 
 //Fergus
 scikit-image

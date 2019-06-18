@@ -2,6 +2,7 @@ import cv2 as cv
 import numpy as np
 from os.path import relpath
 from os import makedirs
+from sklearn.cluster import MeanShift, estimate_bandwidth
 
 def mean_shift_transform(image):
     # Get the raw RGB values from the hdf5 image
@@ -9,9 +10,15 @@ def mean_shift_transform(image):
     rgb_image = np.asarray(rgb_image)
 
     # Convert to Mean Shift
+    original_shape = rgb_image.shape
+    X = np.reshape(rgb_image, [-1, 3])
+    bandwidth = estimate_bandwidth(X, quantile=0.1, n_samples=100)
+    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
+    ms.fit(X)
+    labels = ms.labels_
 
-
-    #save_nmp_array(image, mean_shift_image, 'mean_shift')
+    mean_shift_image = np.reshape(labels, original_shape[:2])  # Just take size, ignore RGB channels.
+    save_nmp_array(image, mean_shift_image, 'mean_shift')
 
 def edge_detector_transform(image):
     # Get the raw RGB values from the hdf5 image
