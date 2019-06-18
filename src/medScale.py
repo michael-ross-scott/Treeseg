@@ -2,43 +2,16 @@ import cv2 as cv
 import numpy as np
 from os.path import relpath
 from os import makedirs
-import re
 
 def mean_shift_transform(image):
-    cap = cv.VideoCapture('slow.flv')
-    # take first frame of the video
-    ret,frame = cap.read()
-    # setup initial location of window
-    r,h,c,w = 250,90,400,125  # simply hardcoded the values
-    track_window = (c,r,w,h)
-    # set up the ROI for tracking
-    roi = frame[r:r+h, c:c+w]
-    hsv_roi =  cv.cvtColor(roi, cv.COLOR_BGR2HSV)
-    mask = cv.inRange(hsv_roi, np.array((0., 60.,32.)), np.array((180.,255.,255.)))
-    roi_hist = cv.calcHist([hsv_roi],[0],mask,[180],[0,180])
-    cv.normalize(roi_hist,roi_hist,0,255,cv.NORM_MINMAX)
-    # Setup the termination criteria, either 10 iteration or move by atleast 1 pt
-    term_crit = ( cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1 )
-    while(1):
-        ret ,frame = cap.read()
-        if ret == True:
-            hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-            dst = cv.calcBackProject([hsv],[0],roi_hist,[0,180],1)
-            # apply meanshift to get the new location
-            ret, track_window = cv.meanShift(dst, track_window, term_crit)
-            # Draw it on image
-            x,y,w,h = track_window
-            img2 = cv.rectangle(frame, (x,y), (x+w,y+h), 255,2)
-            cv.imshow('img2',img2)
-            k = cv.waitKey(60) & 0xff
-            if k == 27:
-                break
-            else:
-                cv.imwrite(chr(k)+".jpg",img2)
-        else:
-            break
-    cv.destroyAllWindows()
-    cap.release()
+    # Get the raw RGB values from the hdf5 image
+    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
+    rgb_image = np.asarray(rgb_image)
+
+    # Convert to Mean Shift
+
+
+    #save_nmp_array(image, mean_shift_image, 'mean_shift')
 
 def edge_detector_transform(image):
     # Get the raw RGB values from the hdf5 image
@@ -46,19 +19,11 @@ def edge_detector_transform(image):
     rgb_image = np.asarray(rgb_image)
 
     #Convert to Canny Edge Detector
-    #image = cv.imread('C:/Users/charl_6lfr58n/Documents/GitHub/apricot/14910/2019-05-10-08-53-40/14.jpg', 0)
     edge_detector_image = cv.Canny(rgb_image, 100, 200)
-    print(edge_detector_image)
     save_nmp_array(image, edge_detector_image, 'edge_detector')
 
-    #plt.subplot(121), plt.imshow(image, cmap='gray')
-    #plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-    #plt.subplot(122), plt.imshow(edge_detector_image, cmap='gray')
-    #plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
-
-    #plt.show()
-
 #Stolen from Fudges
+#dir to make needs to be updated at the end to work on all machines. Had some trouble on Windows and just hardcoded it for testing
 def save_nmp_array(hd5image, new_image, folder):
     # Get relative path for output directory, minus the file extension
     rel_path = relpath(hd5image.filename)[14:-3]
@@ -71,8 +36,6 @@ def save_nmp_array(hd5image, new_image, folder):
         raise Exception("Invalid directory path")
 
     # Make the parent directories
-    print(directory_to_make)
-    print(folder)
     makedirs("../img/%s/%s" % (folder, directory_to_make), exist_ok=True)
 
     # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
