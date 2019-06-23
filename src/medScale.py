@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 from os.path import relpath
 from os import makedirs
-from sklearn.cluster import MeanShift, estimate_bandwidth
+import pymeanshift as pms
 
 def mean_shift_transform(image):
     # Get the raw RGB values from the hdf5 image
@@ -10,14 +10,7 @@ def mean_shift_transform(image):
     rgb_image = np.asarray(rgb_image)
 
     # Convert to Mean Shift
-    original_shape = rgb_image.shape
-    X = np.reshape(rgb_image, [-1, 3])
-    bandwidth = estimate_bandwidth(X, quantile=0.1, n_samples=100)
-    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
-    ms.fit(X)
-    labels = ms.labels_
-
-    mean_shift_image = np.reshape(labels, original_shape[:2])  # Just take size, ignore RGB channels.
+    (mean_shift_image, labels_image, number_regions) = pms.segment(rgb_image, spatial_radius=3, range_radius=4.5, min_density=300)
     save_nmp_array(image, mean_shift_image, 'mean_shift')
 
 def edge_detector_transform(image):
@@ -26,7 +19,10 @@ def edge_detector_transform(image):
     rgb_image = np.asarray(rgb_image)
 
     #Convert to Canny Edge Detector
-    edge_detector_image = cv.Canny(rgb_image, 100, 200)
+    higher_threshold = 275
+    lower_threshold = 230
+
+    edge_detector_image = cv.Canny(rgb_image, lower_threshold, higher_threshold) #Canny(image, low_threshold, high_threshold[, edges[, apertureSize[, L2gradient]]])
     save_nmp_array(image, edge_detector_image, 'edge_detector')
 
 #Stolen from Fudges
