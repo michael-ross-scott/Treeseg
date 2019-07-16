@@ -1,11 +1,14 @@
 h5py==2.9.0
-numpy==1.16.4
+numpy==1.16.1
 pandas==0.24.1
 
 //Charl
 matplotlib
 opencv-python
 scikit-learn
+tensorflow==1.2.0rc2
+Pillow==4.3.0
+scipy==1.1.0
 
 //Fergus
 scikit-image

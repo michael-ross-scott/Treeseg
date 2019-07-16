@@ -19,13 +19,13 @@ def edge_detector_transform(image):
     rgb_image = np.asarray(rgb_image)
 
     #Convert to Canny Edge Detector
-    higher_threshold = 275
-    lower_threshold = 230
+    higher_threshold = 255
+    lower_threshold = higher_threshold/3
+    aperture = 7
 
-    edge_detector_image = cv.Canny(rgb_image, lower_threshold, higher_threshold) #Canny(image, low_threshold, high_threshold[, edges[, apertureSize[, L2gradient]]])
+    edge_detector_image = cv.Canny(rgb_image, lower_threshold, higher_threshold, aperture)
     save_nmp_array(image, edge_detector_image, 'edge_detector')
 
-#Stolen from Fudges
 #dir to make needs to be updated at the end to work on all machines. Had some trouble on Windows and just hardcoded it for testing
 def save_nmp_array(hd5image, new_image, folder):
     # Get relative path for output directory, minus the file extension

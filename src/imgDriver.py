@@ -10,7 +10,8 @@ def main():
     global image_data_root
     image_data_root = sys.argv[1]
 
-    transforms = sys.argv[2:]
+    # transforms = sys.argv[2:]
+    transforms = 'edge_detector'
     print("Performing transforms for: %s" % transforms)
 
     image_paths = get_image_paths()
