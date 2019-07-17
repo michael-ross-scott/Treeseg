@@ -3,7 +3,7 @@ import pandas as pd
 import h5py
 import datetime
 
-from src import smallScale, medScale, lrgScale
+from src import smallScale, medScale
 
 
 def main():
