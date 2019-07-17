@@ -36,8 +36,14 @@ If you run into this [issue](https://github.com/pandas-dev/pandas/issues/19666):
 
 `pip install h5py==2.8.0rc1`
 
-##To install pymeanshift
-1.  The Python extension is compiled as follows: * Linux and MacOS X (in a terminal window): bash cd path-to-pymeanshift-sources ./setup.py build * Windows (at the command prompt): bash cd path-to-pymeanshift-sources python setup.py build
+## Prerequisites
+### Pymeanshift Installation
+
+0. If on windows download Visual Studio C++ build tools.
+
+1.  The Python extension is compiled as follows: 
+   * Linux and MacOS X (in a terminal window): bash cd path-to-pymeanshift-sources ./setup.py build 
+   * Windows (at the command prompt): bash cd path-to-pymeanshift-sources python setup.py build
 
 2.  The wrapper module and the extension can be installed as follows: * Systemwide, for all users (admin privileges are needed):
     * Linux and MacOS X (in a terminal window):
