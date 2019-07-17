@@ -20,19 +20,22 @@ def main():
     for image_path in image_paths:
         i+=1
         image = get_annotated_image(image_path)
-
         if 'lab' in transforms:
             smallScale.lab_transform(image)
         if 'hsi' in transforms:
             smallScale.hsi_transform(image)
+        if 'hsl' in transforms:
+            smallScale.hsl_transform(image)
+        if 'pca' in transforms:
+            smallScale.pca_transform(image)
+        if 'ica' in transforms:
+            smallScale.ica_transform(image)
+        if 'hist_equal' in transforms:
+            medScale.hist_equal_trasnform(image)
         if 'mean_shift' in transforms:
             medScale.mean_shift_transform(image)
         if 'edge_detector' in transforms:
             medScale.edge_detector_transform(image)
-        if 'hough' in transforms:
-            lrgScale.hough_transform(image)
-        if 'template' in transforms:
-            lrgScale.template_transform(image)
         print("Completed image %d" % i)
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
