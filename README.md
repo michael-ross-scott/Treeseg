@@ -16,7 +16,7 @@ CLI arg1: Path to data, e.g. `"/home/fergus/apricot"`.
 
 CLI arg2: Transforms to process, one or many of:
 
-`lab hsi edge_detector mean_shift hough template`
+`lab hsi edge_detector mean_shift hsl hist_equal pca ica`
 
 Output images will be stored in `img/`, keeping their original structure
 
