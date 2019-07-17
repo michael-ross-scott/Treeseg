@@ -28,13 +28,11 @@ def main():
         if 'ica' in transforms:
             smallScale.ica_transform(image)
         if 'hist_equal' in transforms:
-            medScale.hist_equal_trasnform(image)
+            medScale.hist_equal_transform(image)
         if 'mean_shift' in transforms:
             medScale.mean_shift_transform(image)
         if 'edge_detector' in transforms:
             medScale.edge_detector_transform(image)
-        if 'height_transform' in transforms:
-            medScale.height_transform(image)
 
 
 def get_image_paths():
