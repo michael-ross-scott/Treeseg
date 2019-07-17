@@ -10,7 +10,7 @@ def main():
     global image_data_root
     image_data_root = sys.argv[1]
 
-    transforms = sys.argv[2]
+    transforms = sys.argv[2:]
     print("Performing transforms for: %s" % transforms)
 
     image_paths = get_image_paths()
@@ -48,7 +48,7 @@ def get_image_paths():
     print("Layers included in image: %s" % list(get_annotated_image(image_paths[0])["georef_img"]["layers"]))
 
     test = list(get_annotated_image(image_paths[0])["georef_img"]["layers"]['visible']['array'])
-    print("Dimensions: %s x %s" % (len(test[0]), len(test)))
+    print("Dimensions: %s x %s" %(len(test[0]), len(test)))
 
     return image_paths
 

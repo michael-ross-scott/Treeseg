@@ -40,5 +40,5 @@ def save_nmp_array(hd5image, new_image, folder):
 
     # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
     # We will also need a way of either saving the tree masks, or retrieving them from the original image
-    np.save("img/%s/%s%s" % (folder, rel_path, '.npy'), new_image)
-    cv2.imwrite("img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
+    np.save("../img/%s/%s%s" % (folder, rel_path, '.npy'), new_image)
+    cv2.imwrite("../img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
