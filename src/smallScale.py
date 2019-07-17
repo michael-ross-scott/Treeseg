@@ -19,9 +19,6 @@ def lab_transform(image):
     lab_image = color.rgb2lab(rgb_image)
     save_nmp_array(image, lab_image, 'lab')
 
-from os.path import relpath
-from os import makedirs
-import re
 
 def hsi_transform(image):
     # Get the raw RGB values from the hdf5 image
@@ -31,6 +28,7 @@ def hsi_transform(image):
     # Convert to HSI - Note this saves H as a fraction, instead of degrees
     hsi_image = color.rgb2hsv(rgb_image)
     save_nmp_array(image, hsi_image, 'hsi')
+    
     
 # Converts image to hsl colour space
 def hsl_transform(image):
