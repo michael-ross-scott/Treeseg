@@ -1,4 +1,4 @@
-import cv2 as cv
+import cv2
 import numpy as np
 from os.path import relpath
 from os import makedirs
@@ -27,7 +27,7 @@ def edge_detector_transform(image):
     # higher_threshold = int(min(255, (1.0 + sigma) * v))
     aperture = 3
 
-    edge_detector_image = cv.Canny(rgb_image, lower_threshold, higher_threshold, aperture)
+    edge_detector_image = cv2.Canny(rgb_image, lower_threshold, higher_threshold, aperture)
     save_nmp_array(image, edge_detector_image, 'edge_detector')
 
 #dir to make needs to be updated at the end to work on all machines. Had some trouble on Windows and just hardcoded it for testing
@@ -48,4 +48,4 @@ def save_nmp_array(hd5image, new_image, folder):
     # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
     # We will also need a way of either saving the tree masks, or retrieving them from the original image
     np.save("../img/%s/%s%s" % (folder, rel_path, '.npy'), new_image)
-    cv.imwrite("../img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
+    cv2.imwrite("../img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
