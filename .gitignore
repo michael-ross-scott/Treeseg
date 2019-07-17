@@ -5,3 +5,4 @@ venv
 *.jpg
 apricot/requirements.txt
 apricot/segmentation.ipynb
+img/*/*

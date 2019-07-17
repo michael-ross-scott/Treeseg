@@ -3,6 +3,7 @@ import numpy as np
 from os.path import relpath
 from os import makedirs
 import pymeanshift as pms
+from pylab import *
 
 def mean_shift_transform(image):
     # Get the raw RGB values from the hdf5 image
@@ -30,6 +31,15 @@ def edge_detector_transform(image):
     edge_detector_image = cv2.Canny(rgb_image, lower_threshold, higher_threshold, aperture)
     save_nmp_array(image, edge_detector_image, 'edge_detector')
 
+# Performs histogram equalization on nir
+def hist_equal_transform(image):
+    ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
+    np_image = np.asarray(ndvi_image)
+
+    equal_img = cv2.equalizeHist(np_image)
+
+    save_nmp_array(image, equal_img, 'hist_equal')
+    
 #dir to make needs to be updated at the end to work on all machines. Had some trouble on Windows and just hardcoded it for testing
 def save_nmp_array(hd5image, new_image, folder):
     # Get relative path for output directory, minus the file extension
