@@ -3,3 +3,5 @@ numpy==1.15.4
 pandas==0.24.1
 opencv-python
 Pillow
+sklearn
+matplotlib
