@@ -6,9 +6,7 @@ pandas==0.24.1
 matplotlib
 opencv-python
 scikit-learn
-tensorflow==1.2.0rc2
-Pillow==4.3.0
-scipy==1.1.0
+tensorflow
 
 //Fergus
 scikit-image

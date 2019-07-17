@@ -15,13 +15,17 @@ def mean_shift_transform(image):
 
 def edge_detector_transform(image):
     # Get the raw RGB values from the hdf5 image
-    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
+    rgb_image = (list(image["georef_img"]["layers"]['nir']['array']))
+    # v = np.median(rgb_image)
     rgb_image = np.asarray(rgb_image)
 
     #Convert to Canny Edge Detector
-    higher_threshold = 255
-    lower_threshold = higher_threshold/3
-    aperture = 7
+    higher_threshold = 275
+    lower_threshold = 230
+    # sigma = 0.33
+    # lower_threshold = int(max(0, (1.0 - sigma) * v))
+    # higher_threshold = int(min(255, (1.0 + sigma) * v))
+    aperture = 3
 
     edge_detector_image = cv.Canny(rgb_image, lower_threshold, higher_threshold, aperture)
     save_nmp_array(image, edge_detector_image, 'edge_detector')
