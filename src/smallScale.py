@@ -10,6 +10,14 @@ from os import makedirs
 import re
 
 
+def lab_transform(image):
+    pass
+
+
+def hsi_transform(image):
+    pass
+
+
 # Converts image to hsl colour space
 def hsl_transform(image):
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
