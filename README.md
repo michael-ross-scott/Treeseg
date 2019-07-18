@@ -16,7 +16,7 @@ CLI arg1: Path to data, e.g. `"/home/fergus/apricot"`.
 
 CLI arg2: Transforms to process, one or many of:
 
-`lab hsi edge_detector mean_shift hough template`
+`lab hsi edge_detector mean_shift hsl hist_equal pca ica`
 
 Output images will be stored in `img/`, keeping their original structure
 
@@ -36,15 +36,17 @@ If you run into this [issue](https://github.com/pandas-dev/pandas/issues/19666):
 
 `pip install h5py==2.8.0rc1`
 
-##To install pymeanshift
+## Prerequisites
+### Pymeanshift Installation
+
+0. If on windows download Visual Studio C++ build tools.
+
 1.  The Python extension is compiled as follows: 
-    * Linux and MacOS X (in a terminal window): bash cd path-to-pymeanshift-sources ./setup.py build
+    * Linux and MacOS X (in a terminal window): bash cd path-to-pymeanshift-sources ./setup.py build 
     * Windows (at the command prompt): bash cd path-to-pymeanshift-sources python setup.py build
 
 2.  The wrapper module and the extension can be installed as follows: * Systemwide, for all users (admin privileges are needed):
-    * Linux and MacOS X (in a terminal window):
-        sudo ./setup.py install
-    * Windows (at the command prompt, from an admin account):
-        python setup.py install
+    * Linux and MacOS X (in a terminal window): sudo ./setup.py install
+    * Windows (at the command prompt, from an admin account): python setup.py install
 
 3.  If everything went fine, it should be possible to import the pymeanshift module in Python code. The module provides a function named segment and a class named Segmenter.
