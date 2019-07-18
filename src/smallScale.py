@@ -5,8 +5,6 @@ from os import makedirs
 import re
 import cv2
 from sklearn.decomposition import FastICA
-from pylab import *
-
 import matplotlib
 from matplotlib import colors
 

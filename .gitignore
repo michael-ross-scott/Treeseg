@@ -6,3 +6,4 @@ venv
 apricot/requirements.txt
 apricot/segmentation.ipynb
 img/*/*
+/src/feature_extractors/pymeanshift/build
