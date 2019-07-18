@@ -1,4 +1,4 @@
-#
+
 #  Python Module for Mean Shift Image Segmentation (PyMeanShift)
 #  Copyright (C) 2012 by Frederic Jean
 #

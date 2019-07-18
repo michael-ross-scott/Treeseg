@@ -10,7 +10,7 @@ def mean_shift_transform(image):
     np_image = np.asarray(ndvi_image)
 
     # Convert to Mean Shift
-    (mean_shift_image, labels_image, number_regions) = pms.segment(np_image, spatial_radius=3, range_radius=4.5, min_density=300)
+    (mean_shift_image, labels_image, number_regions) = pms.segment(np_image, spatial_radius=1, range_radius=1, min_density=300)
     save_nmp_array(image, mean_shift_image, 'mean_shift')
 
 def edge_detector_transform(image, sigma=0.33):
