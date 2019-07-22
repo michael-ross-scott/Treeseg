@@ -3,6 +3,7 @@ import numpy as np
 from os.path import relpath
 from os import makedirs
 import pymeanshift as pms
+import re
 
 def mean_shift_transform(image):
     # Get the raw RGB values from the hdf5 image
@@ -38,16 +39,15 @@ def hist_equal_transform(image):
 
     save_nmp_array(image, equal_img, 'hist_equal')
     
-#dir to make needs to be updated at the end to work on all machines. Had some trouble on Windows and just hardcoded it for testing
 def save_nmp_array(hd5image, new_image, folder):
     # Get relative path for output directory, minus the file extension
-    rel_path = relpath(hd5image.filename)[14:-3]
+    rel_path = relpath(hd5image.filename)[6:-3]
 
     # Work out which parent directories need to be created before writing the file
-    try:
-        #directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).groups(1)
-        directory_to_make = rel_path
-    except:
+    #directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).group(1)
+    directory_to_make = rel_path
+    if not directory_to_make:
+        # Ya messed up real bad
         raise Exception("Invalid directory path")
 
     # Make the parent directories
