@@ -5,6 +5,7 @@ from os import makedirs
 import pymeanshift as pms
 import re
 
+
 def mean_shift_transform(image):
     # Get the raw RGB values from the hdf5 image
     ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
@@ -13,6 +14,7 @@ def mean_shift_transform(image):
     # Convert to Mean Shift
     (mean_shift_image, labels_image, number_regions) = pms.segment(np_image, spatial_radius=1, range_radius=1, min_density=300)
     save_nmp_array(image, mean_shift_image, 'mean_shift')
+
 
 def edge_detector_transform(image, sigma=0.33):
     # Get the raw RGB values from the hdf5 image
@@ -30,6 +32,7 @@ def edge_detector_transform(image, sigma=0.33):
 
     save_nmp_array(image, edge_detector_image, 'edge_detector')
 
+
 # Performs histogram equalization on nir
 def hist_equal_transform(image):
     ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
@@ -38,14 +41,14 @@ def hist_equal_transform(image):
     equal_img = cv2.equalizeHist(np_image)
 
     save_nmp_array(image, equal_img, 'hist_equal')
-    
+
+
 def save_nmp_array(hd5image, new_image, folder):
     # Get relative path for output directory, minus the file extension
     rel_path = relpath(hd5image.filename)[6:-3]
 
     # Work out which parent directories need to be created before writing the file
-    #directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).group(1)
-    directory_to_make = rel_path
+    directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).group(1)
     if not directory_to_make:
         # Ya messed up real bad
         raise Exception("Invalid directory path")
