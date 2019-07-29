@@ -6,17 +6,17 @@ import pymeanshift as pms
 import re
 
 
-def mean_shift_transform(image):
+def mean_shift_transform(im_num, image):
     # Get the raw RGB values from the hdf5 image
     ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
     np_image = np.asarray(ndvi_image)
 
     # Convert to Mean Shift
     (mean_shift_image, labels_image, number_regions) = pms.segment(np_image, spatial_radius=1, range_radius=1, min_density=300)
-    save_nmp_array(image, mean_shift_image, 'mean_shift')
+    save_nmp_array(im_num, mean_shift_image, 'mean_shift')
 
 
-def edge_detector_transform(image, sigma=0.33):
+def edge_detector_transform(im_num, image, sigma=0.33):
     # Get the raw RGB values from the hdf5 image
     nir_image = (list(image["georef_img"]["layers"]['nir']['array']))
     np_image = np.asarray(nir_image)
@@ -30,33 +30,21 @@ def edge_detector_transform(image, sigma=0.33):
 
     edge_detector_image = cv2.Canny(np_image,lower,upper)
 
-    save_nmp_array(image, edge_detector_image, 'edge_detector')
+    save_nmp_array(im_num, edge_detector_image, 'edge_detector')
 
 
 # Performs histogram equalization on nir
-def hist_equal_transform(image):
+def hist_equal_transform(im_num, image):
     ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
     np_image = np.asarray(ndvi_image)
 
     equal_img = cv2.equalizeHist(np_image)
 
-    save_nmp_array(image, equal_img, 'hist_equal')
+    save_nmp_array(im_num, equal_img, 'hist_equal')
 
 
-def save_nmp_array(hd5image, new_image, folder):
-    # Get relative path for output directory, minus the file extension
-    rel_path = relpath(hd5image.filename)[6:-3]
-
-    # Work out which parent directories need to be created before writing the file
-    directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).group(1)
-    if not directory_to_make:
-        # Ya messed up real bad
-        raise Exception("Invalid directory path")
-
-    # Make the parent directories
-    makedirs("../img/%s/%s" % (folder, directory_to_make), exist_ok=True)
+def save_nmp_array(im_num, new_image, folder):
 
     # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
     # We will also need a way of either saving the tree masks, or retrieving them from the original image
-    np.save("../img/%s/%s%s" % (folder, rel_path, '.npy'), new_image)
-    cv2.imwrite("../img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
+    cv2.imwrite("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)

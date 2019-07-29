@@ -7,10 +7,16 @@ from src import smallScale, medScale
 
 
 def main():
+    f = open("trainval.txt", "w+")
+
     global image_data_root
     image_data_root = sys.argv[1]
 
-    transforms = sys.argv[2]
+    transforms = "mask"
+
+    # Writes image names to trainval text file
+    train_files = "trainval"
+
     print("Performing transforms for: %s" % transforms)
 
     image_paths = get_image_paths()
@@ -18,24 +24,28 @@ def main():
     start_time = datetime.datetime.now()
     i = 0
     for image_path in image_paths:
-        i+=1
+        i += 1
         image = get_annotated_image(image_path)
+        if'mask' in transforms:
+            smallScale.mask(i, image)
         if 'lab' in transforms:
-            smallScale.lab_transform(image)
+            smallScale.lab_transform(i, image)
         if 'hsi' in transforms:
-            smallScale.hsi_transform(image)
+            smallScale.hsi_transform(i, image)
         if 'hsl' in transforms:
-            smallScale.hsl_transform(image)
+            smallScale.hsl_transform(i, image)
         if 'pca' in transforms:
-            smallScale.pca_transform(image)
+            smallScale.pca_transform(i, image)
         if 'ica' in transforms:
-            smallScale.ica_transform(image)
+            smallScale.ica_transform(i, image)
         if 'hist_equal' in transforms:
-            medScale.hist_equal_transform(image)
+            medScale.hist_equal_transform(i, image)
         if 'mean_shift' in transforms:
-            medScale.mean_shift_transform(image)
+            medScale.mean_shift_transform(i, image)
         if 'edge_detector' in transforms:
-            medScale.edge_detector_transform(image)
+            medScale.edge_detector_transform(i, image)
+        if 'trainval' in train_files:
+            f.write(str(i) + "\n")
         print("Completed image %d" % i)
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
