@@ -7,7 +7,7 @@ from pylab import *
 
 def mean_shift_transform(image):
     # Get the raw RGB values from the hdf5 image
-    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
+    rgb_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
     rgb_image = np.asarray(rgb_image)
 
     # Convert to Mean Shift
@@ -16,7 +16,10 @@ def mean_shift_transform(image):
 
 def edge_detector_transform(image):
     # Get the raw RGB values from the hdf5 image
-    rgb_image = (list(image["georef_img"]["layers"]['nir']['array']))
+    try:
+        rgb_image = (list(image["georef_img"]["layers"]['nir']['array']))
+    except KeyError:
+        return
     # v = np.median(rgb_image)
     rgb_image = np.asarray(rgb_image)
 
@@ -43,13 +46,13 @@ def hist_equal_transform(image):
 #dir to make needs to be updated at the end to work on all machines. Had some trouble on Windows and just hardcoded it for testing
 def save_nmp_array(hd5image, new_image, folder):
     # Get relative path for output directory, minus the file extension
-    rel_path = relpath(hd5image.filename)[14:-3]
+    rel_path = relpath(hd5image.filename)[6:-3]
 
     # Work out which parent directories need to be created before writing the file
-    try:
-        #directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).groups(1)
-        directory_to_make = rel_path
-    except:
+    directory_to_make = re.search(r'^([0-9a-zA-Z/ ]*/[0-9a-zA-Z\-]*/[0-9a-zA-Z\-]*)/[a-zA-Z0-9]*$', rel_path).group(1)
+    # directory_to_make = rel_path
+    if not directory_to_make:
+        # Ya messed up real bad
         raise Exception("Invalid directory path")
 
     # Make the parent directories
@@ -57,5 +60,7 @@ def save_nmp_array(hd5image, new_image, folder):
 
     # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
     # We will also need a way of either saving the tree masks, or retrieving them from the original image
+    mask = (list(hd5image["georef_img"]["layers"]['tree_global_mask']['array']))
     np.save("../img/%s/%s%s" % (folder, rel_path, '.npy'), new_image)
-    cv2.imwrite("../img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
+    np.save("../img/%s/%s_mask%s" % (folder, rel_path, '.npy'), np.array(mask))
+    # cv2.imwrite("../img/%s/%s%s" % (folder, rel_path, '.png'), new_image)
