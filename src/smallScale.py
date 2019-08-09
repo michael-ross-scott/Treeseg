@@ -38,11 +38,9 @@ def hsi_transform(image):
     :return: numpy array
     """
 
-    # Get the raw RGB values from the hdf5 image
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
     rgb_image = np.asarray(rgb_image)
 
-    # Convert to HSI - Note this saves H as a fraction, instead of degrees
     hsi_image = color.rgb2hsv(rgb_image)
     return hsi_image
 
@@ -53,13 +51,9 @@ def lab_transform(image):
     :return: numpy array
     """
 
-    # Get the raw values from the hdf5 image
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
 
-    # Convert into numpy arrays
     rgb_image = np.asarray(rgb_image)
-
-    # Convert to lab
     lab_image = color.rgb2lab(rgb_image)
 
     return lab_image
@@ -78,7 +72,6 @@ def hsl_transform(image):
     return hsl_image
 
 
-
 def ica_transform(image):
     """
     :param image: h5 image
@@ -90,7 +83,7 @@ def ica_transform(image):
 
     gray_img = cv2.cvtColor(np_image, cv2.COLOR_BGR2GRAY)
 
-    Ica = FastICA(n_components=100)
+    Ica = FastICA(n_components=50)
 
     # Reconstruct image with independent components
     image_ica = Ica.fit_transform(gray_img)
@@ -99,7 +92,6 @@ def ica_transform(image):
     return image_restored
 
 
-# Performs principal component analysis on image
 def pca_transform(image):
     """
     :param image: h5 image
@@ -119,7 +111,6 @@ def pca_transform(image):
     return color_img
 
 
-# Performs principal component analysis on individual colour channels
 def comp_2d(image_2d):
     """
     :param image_2d: single channel numpy image

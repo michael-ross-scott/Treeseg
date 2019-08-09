@@ -128,5 +128,4 @@ def mask(image):
     mask_image = np.asarray(mask_image)
 
     mask_image = mask_image + 1
-    # Do this so we can see wtf we are doing
     return mask_image

@@ -17,7 +17,7 @@ transforms options:
     small_Scale = {hsi, lab, hsl, pca, ica}
     med_scale   = {mean_shift, hist_equal, edge_detector}
 '''
-transforms = "rgb hist_equal"
+transforms = "hist_equal morph_closing ica dem"
 
 '''
 Files:
@@ -34,7 +34,7 @@ File options:
     trainval: all image names are written to this file
     all     : writes seperate train and val files, as well as trainval
 '''
-train_files = "trainval all"
+train_files = "trainval"
 
 '''
 train_split: double ~ (0,1) specifies how much data to train and how much to test
@@ -47,7 +47,7 @@ save options:
     png: save as png
     npy: save as numpy array
 '''
-save = "gif"
+save = "png"
 
 def main():
 
@@ -83,7 +83,11 @@ def perform_transforms(image_paths, im_root, i=0):
     for im in image_paths:
         i += 1
         image = get_annotated_image(im, im_root)
+
+        # List of numpy images
         array_of_images = []
+
+        # Folder name to write our images
         scale = ""
 
         if 'rgb' in transforms or 'dem' in transforms or 'nir' in transforms or 'ndvi' in transforms or \
@@ -105,7 +109,7 @@ def perform_transforms(image_paths, im_root, i=0):
             mask = norm_layers.get_layers('mask',image)
             save_im(i, mask, "mask")
 
-        if 'image' in save:
+        if 'png' in save:
             nd_arr = rollup_images(array_of_images)
             assert nd_arr.shape[2] < 5
             assert nd_arr.shape[2] != 2
@@ -117,8 +121,6 @@ def perform_transforms(image_paths, im_root, i=0):
         if 'np' in save:
             nd_arr = rollup_images(array_of_images)
             save_nmp_array(i, nd_arr, scale)
-
-        print("Completed image %d" % i)
     return i
 
 
@@ -153,8 +155,8 @@ def get_annotated_image(im, im_root):
 
 def rollup_images(array_of_images):
     """
-    :param array_of_images: array that contains individual numpy arrays
-    :return: ndstack of numpy arrays
+    :param array_of_images: list that contains individual numpy arrays
+    :return: numpy ndstack
     """
 
     nd_arr = array_of_images[0]
@@ -171,6 +173,7 @@ def save_im(im_num, new_image, folder):
     :return: None
     """
 
+    print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.png'))
     cv2.imwrite("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)
 
 
@@ -187,6 +190,8 @@ def save_gif(im_num, new_image, folder):
         im = Image.fromarray(i)
         im_list.append(im)
 
+    print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.gif'))
+
     # Doesn't work without this first line
     im_list[0].save("../img/%s/%s%s" % (folder, im_num, '.gif'))
     im_list[0].save("../img/%s/%s%s" % (folder, im_num, '.gif'), append=im_list[1:], save_all=True)
@@ -200,6 +205,7 @@ def save_nmp_array(im_num, new_image, folder):
     :return: None
     """
 
+    print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.npy'))
     np.save("../img/%s/%s%s" % (folder, im_num, '.npy'), new_image)
 
 
