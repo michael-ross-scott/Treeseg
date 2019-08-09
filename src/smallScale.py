@@ -1,62 +1,90 @@
 import numpy as np
 from skimage import color
-from os.path import relpath
-from os import makedirs
-import re
 import cv2
 from sklearn.decomposition import FastICA
 import matplotlib
 from matplotlib import colors
-from PIL import Image
 
 
-def lab_transform(im_num, image):
-    # Get the raw RGB values from the hdf5 image
-    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
-    dem = (list(image["georef_img"]["layers"]['dem']['array']))
+def run_transform(im_transform, image, ndarray):
+    """
+    :param im_transform: list of transforms that needs to be done
+    :param image: h5 image file
+    :param ndarray: list containing numpy images
+    :return: list containing numpy images
+    """
 
-    rgb_image = np.asarray(rgb_image)
-    dem_image = np.asarray(dem)
-
-    # Convert to lab
-    lab_image = color.rgb2lab(rgb_image)
-    lab_dem_image = np.dstack((dem_image, lab_image))
-
-    save_nmp_array(im_num, lab_dem_image, 'lab')
-
-
-def mask(im_num,image):
-    mask_image = (list(image["georef_img"]["layers"]['tree_global_mask']['array']))
-    mask_image = np.asarray(mask_image)
-
-    # Do this so we can see wtf we are doing
-    mask_image = mask_image * 255
-
-    save_nmp_array(im_num, mask_image, 'mask')
+    if 'hsl' in im_transform:
+        im = hsl_transform(image)
+        ndarray.append(im)
+    if 'lab' in im_transform:
+        im = lab_transform(image)
+        ndarray.append(im)
+    if 'hsi' in im_transform:
+        im = ica_transform(image)
+        ndarray.append(im)
+    if 'pca' in im_transform:
+        im = pca_transform(image)
+        ndarray.append(im)
+    if 'ica' in im_transform:
+        im = ica_transform(image)
+        ndarray.append(im)
+    return ndarray
 
 
-def hsi_transform(im_num, image):
+def hsi_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
     # Get the raw RGB values from the hdf5 image
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
     rgb_image = np.asarray(rgb_image)
 
     # Convert to HSI - Note this saves H as a fraction, instead of degrees
     hsi_image = color.rgb2hsv(rgb_image)
-    save_nmp_array(im_num, hsi_image, 'hsi')
-    
-    
-# Converts image to hsl colour space
-def hsl_transform(im_num,image):
+    return hsi_image
+
+
+def lab_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
+    # Get the raw values from the hdf5 image
+    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
+
+    # Convert into numpy arrays
+    rgb_image = np.asarray(rgb_image)
+
+    # Convert to lab
+    lab_image = color.rgb2lab(rgb_image)
+
+    return lab_image
+
+
+def hsl_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
     np_image = np.asarray(rgb_image)
 
-    # Convert to hsl
     hsl_image = matplotlib.colors.rgb_to_hsv(np_image)
-    save_nmp_array(image, hsl_image, 'hsl')
+    return hsl_image
 
 
-# Performs independent component analysis on image
-def ica_transform(im_num, image):
+
+def ica_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
     np_image = np.array(rgb_image)
 
@@ -68,11 +96,16 @@ def ica_transform(im_num, image):
     image_ica = Ica.fit_transform(gray_img)
     image_restored = Ica.inverse_transform(image_ica)
 
-    save_nmp_array(im_num, image_restored, 'ica')
+    return image_restored
 
 
 # Performs principal component analysis on image
-def pca_transform(im_num, image):
+def pca_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
 
     np_image = np.array(rgb_image)
@@ -83,11 +116,16 @@ def pca_transform(im_num, image):
 
     # Combining rgb channels
     color_img = np.dstack((img_r_pca, img_g_pca, img_b_pca))
-    save_nmp_array(im_num, color_img, 'pca')
+    return color_img
 
 
 # Performs principal component analysis on individual colour channels
 def comp_2d(image_2d):
+    """
+    :param image_2d: single channel numpy image
+    :return: reduced colour numpy image
+    """
+
     cov_mat = image_2d - np.mean(image_2d, axis=1)
     eig_val, eig_vec = np.linalg.eigh(np.cov(cov_mat))
     p = np.size(eig_vec, axis=1)
@@ -107,9 +145,3 @@ def comp_2d(image_2d):
     # Controls eigenvalues
     recon_img_mat = np.uint8(np.absolute(recon))
     return recon_img_mat
-
-
-def save_nmp_array(im_num, new_image, folder):
-    # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
-    # We will also need a way of either saving the tree masks, or retrieving them from the original image
-    cv2.imwrite("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)
