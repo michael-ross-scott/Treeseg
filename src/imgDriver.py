@@ -11,7 +11,6 @@ def main():
     trainfcn = os.path.join(dirpath[:-3], 'trainfcn.txt')
 
     f = open("trainval.txt", "w+")
-    # f1 = open("evalfcn.txt", "w+")
     f2 = open(trainfcn, "w+")
 
     global image_data_root
@@ -43,10 +42,11 @@ def main():
             medScale.mean_shift_transform(i, image, f2)
         if 'edge_detector' in transforms:
             medScale.edge_detector_transform(f2, i, image)
+        if 'rgb' in transforms:
+            medScale.rgb(f2, i, image)
         if 'mask' in transforms:
             smallScale.mask(i, image)
             f.write(str(i) + "\n")
-            # f2.write('../Treeseg/img/mask/' + str(i) + '.png' + "\n")
         print("Completed image %d" % i)
         i += 1
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
@@ -66,6 +66,9 @@ def get_image_paths():
 
 def get_annotated_image(image_path):
     true_path = "%s/%s" % (image_data_root, image_path)
-    return h5py.File(true_path, 'r')
+    try:
+        return h5py.File(true_path, 'r')
+    except OSError:
+            print("File not found, assuming removed: " + image_path)
 
 main()

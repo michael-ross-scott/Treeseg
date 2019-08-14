@@ -4,12 +4,10 @@ pandas==0.24.1
 matplotlib
 opencv-python
 
-//Charl
 scikit-learn
+scipy==1.1.0
 
-//Fergus
 scikit-image
 
-//Mike
 Pillow
 sklearn
