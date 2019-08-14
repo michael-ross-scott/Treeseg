@@ -34,7 +34,6 @@ def get_layers(im_transform, image, ndarray):
 
 
 def rgb(image):
-
     """
     :param image: h5 image
     :return: numpy array

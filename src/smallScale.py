@@ -79,9 +79,14 @@ def ica_transform(image):
     """
 
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
-    np_image = np.array(rgb_image)
+    dem_image = (list(image["georef_img"]["layers"]['dem']['array']))
 
-    gray_img = cv2.cvtColor(np_image, cv2.COLOR_BGR2GRAY)
+    np_image = np.array(rgb_image)
+    np_image1 = np.asarray(dem_image)
+
+    np_image = np.dstack((np_image, np_image1))
+
+    gray_img = cv2.cvtColor(np_image, cv2.COLOR_BGRA2GRAY)
 
     Ica = FastICA(n_components=50)
 
