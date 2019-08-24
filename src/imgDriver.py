@@ -46,6 +46,7 @@ save options:
 '''
 save = "png"
 
+
 def main():
 
     print("Performing transforms for: %s" % transforms)
@@ -63,7 +64,7 @@ def main():
 
     if "all" in train_files:
         writer.write_all(i, train_split)
-    elif "trainvail" in train_files:
+    elif "trainval" in train_files:
         writer.write_trainval(i)
 
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
@@ -74,7 +75,7 @@ def perform_transforms(image_paths, im_root, i=0):
     :param image_paths: paths to all the images
     :param im_root: Place where hdf5 file resides
     :param i: keeps track of images that have been written
-    :return: i
+    :return: integer i
     """
 
     for im in image_paths:
