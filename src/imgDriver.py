@@ -1,13 +1,8 @@
 import pandas as pd
 import h5py
 import datetime
-import cv2
 import numpy as np
-import os
-from PIL import Image
-import imageio
-import random
-from src import norm_layers, smallScale, medScale
+from src import norm_layers, smallScale, medScale, writer
 
 # absolute path to the data
 image_data_root = "/home/user/PycharmProjects/Apricot"
@@ -23,18 +18,8 @@ transforms options:
     small_Scale = {hsi, lab, hsl, pca, ica}
     med_scale   = {mean_shift, hist_equal, edge_detector, morph_closing}
 '''
-transforms = "rgb mask"
+transforms = "hist_equal ica morph_closing"
 
-# Keeps track of image names for the neural network
-'''
-Files:
-    trainval: all image names are written to this file
-    train   : writes seperate train and validation as well as trainval
-    val:    : images that are for validation are written to this file
-'''
-train_val = open("trainval.txt", "w")
-train = open("train.txt", "w")
-val = open("val.txt", "w")
 
 # Choose what type of files to write, one or the other
 '''
@@ -42,13 +27,15 @@ File options:
     trainval: all image names are written to this file
     all     : writes seperate train and val files, as well as trainval
 '''
-train_files = "all"
+train_files = ""
+
 
 # Choose training and evaluation split
 '''
 train_split: double ~ (0,1) specifies how much data to train and how much to test
 '''
 train_split = 0.7
+
 
 # Choose save options for image array
 '''
@@ -74,11 +61,10 @@ def main():
     image_path2 = get_image_paths(image_data_root2)
     perform_transforms(image_path2, image_data_root2, i)
 
-
     if "all" in train_files:
-        write_all(i)
-    else:
-        write_trainval(i)
+        writer.write_all(i, train_split)
+    elif "trainvail" in train_files:
+        writer.write_trainval(i)
 
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
@@ -111,32 +97,32 @@ def perform_transforms(image_paths, im_root, i=0):
             array_of_images = smallScale.run_transform(transforms, image, array_of_images)
             scale += "small"
 
-        if 'hist_equal' in transforms or 'mean_shift' in transforms or 'morph_closing' in transforms or 'edge_detector'\
-                in transforms:
+        if 'hist_equal' in transforms or 'mean_shift' in transforms or 'morph_closing' in transforms or \
+                'edge_detector' in transforms:
             array_of_images = medScale.run_transform(transforms, image, array_of_images)
             scale += "med"
 
         if 'mask' in transforms:
             mask = norm_layers.mask(image)
-            save_im(i, mask, "mask")
+            writer.save_im(i, mask, "mask")
 
         if 'png' in save:
             nd_arr = rollup_images(array_of_images)
-            save_im(i, nd_arr, scale)
+            writer.save_im(i, nd_arr, scale)
 
         if 'gif' in save:
-            save_gif(i, array_of_images, scale)
+            writer.save_gif(i, array_of_images, scale)
 
         if 'np' in save:
             nd_arr = rollup_images(array_of_images)
-            save_nmp_array(i, nd_arr, scale)
+            writer.save_nmp_array(i, nd_arr, scale)
     return i
 
 
 def get_image_paths(im_root):
     """
     :param im_root: Place where hdf5 file resides
-    :return: paths to all the images
+    :return: list of paths to all the h5 images
     """
 
     print("Getting manifest.hd5 at: %s/manifest.md5" % im_root)
@@ -172,84 +158,6 @@ def rollup_images(array_of_images):
     for i in range(1, len(array_of_images)):
         nd_arr = np.dstack((nd_arr, array_of_images[i]))
     return nd_arr
-
-
-def save_im(im_num, new_image, folder):
-    """
-    :param im_num: filename
-    :param new_image: numpy file to be written
-    :param folder: folder where it needs to be written
-    :return: None
-    """
-
-    print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.png'))
-    cv2.imwrite("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)
-
-
-def save_gif(im_num, new_image, folder):
-    """
-    :param im_num: filename
-    :param new_image: numpy file to be written
-    :param folder: folder where it needs to be written
-    :return: None
-    """
-
-    im_list = []
-    for i in new_image:
-        im = Image.fromarray(i)
-        im_list.append(im)
-
-    print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.gif'))
-
-    im_path = "../img/" + folder + "/" + str(im_num) + ".gif"
-    imageio.mimsave(im_path,im_list)
-    os.system("convert " + im_path + " -coalesce " + im_path)
-
-
-def save_nmp_array(im_num, new_image, folder):
-    """
-    :param im_num: filename
-    :param new_image: numpy file to be written
-    :param folder: folder where it needs to be written
-    :return: None
-    """
-
-    print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.npy'))
-    np.save("../img/%s/%s%s" % (folder, im_num, '.npy'), new_image)
-
-
-def write_trainval(num_images):
-    """
-    :param num_images: number of image names to write
-    :return: None
-    """
-    for i in range(1, num_images):
-        train_val.write(str(i)+'\n')
-    train_val.close()
-
-
-def write_all(num_images):
-    """
-    :param num_images: number of image names to write
-    :return: None
-    """
-    upper = int(num_images * train_split)
-    im_list = []
-
-    for i in range(0, num_images):
-        im_list.append(i)
-
-    random.shuffle(im_list)
-
-    for i in range(1, upper):
-        train.write(str(im_list[i]) + '\n')
-    train.close()
-
-    for i in range(upper + 1, num_images):
-        val.write(str(im_list[i]) + "\n")
-    val.close()
-
-    write_trainval(num_images)
 
 
 main()
