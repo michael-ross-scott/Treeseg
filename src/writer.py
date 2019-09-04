@@ -12,9 +12,21 @@ Files:
     train   : writes seperate train and validation as well as trainval
     val:    : images that are for validation are written to this file
 '''
+
 train_val = open("trainval.txt", "w")
 train = open("train.txt", "w")
 val = open("val.txt", "w")
+
+
+def create_transform_dir(folder):
+    """
+    :param folder: the directory that image transforms will be written to
+    :return: None
+    """
+    try:
+        os.mkdir("../img/" + folder + "/")
+    except:
+        print("Directory already exists")
 
 
 def save_im(im_num, new_image, folder):
@@ -45,7 +57,7 @@ def save_gif(im_num, new_image, folder):
     print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.gif'))
 
     im_path = "../img/" + folder + "/" + str(im_num) + ".gif"
-    imageio.mimsave(im_path,im_list)
+    imageio.mimsave(im_path, im_list)
     os.system("convert " + im_path + " -coalesce " + im_path)
 
 
@@ -56,7 +68,6 @@ def save_nmp_array(im_num, new_image, folder):
     :param folder: folder where it needs to be written
     :return: None
     """
-
     print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.npy'))
     np.save("../img/%s/%s%s" % (folder, im_num, '.npy'), new_image)
 
