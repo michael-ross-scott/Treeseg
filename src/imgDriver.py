@@ -39,9 +39,10 @@ train_split = 0.7
 # Choose save options for image array
 '''
 save options:
-    gif: save as gif
-    png: save as png
-    npy: save as numpy array
+    gif: Save transform as gif
+    png: Save transform as png
+    npy: Save transform as numpy array
+    png_mask: Save the mask as a png 
     npy_mask: Save the mask as a separate npy array
 '''
 save = "np npy_mask"
@@ -101,11 +102,11 @@ def perform_transforms(image_paths, im_root, i=0):
             array_of_images = medScale.run_transform(transforms, image, array_of_images)
             scale += "med"
 
-        if 'mask' in transforms:
+        if 'png_mask' in save:
             mask = norm_layers.mask(image)
             writer.save_im(i, mask, "mask")
 
-        if "mask_np" in transforms:
+        if "npy_mask" in save:
             mask = norm_layers.np_mask(image)
             writer.save_nmp_array(i, mask, "mask")
 
