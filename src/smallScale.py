@@ -1,18 +1,12 @@
 import numpy as np
-from skimage import color
-from os.path import relpath
-from os import makedirs
-import re
 import cv2
-from sklearn.decomposition import FastICA
 import matplotlib
+
+from skimage import color
+from sklearn.decomposition import FastICA
 from matplotlib import colors
-from PIL import Image
 
-import scipy
-import scipy.misc
-
-def lab_transform(im_num, image, f2):
+def lab_transform(im_num, image, fw):
     # Get the raw RGB values from the hdf5 image
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
     dem = (list(image["georef_img"]["layers"]['dem']['array']))
@@ -24,7 +18,7 @@ def lab_transform(im_num, image, f2):
     lab_image = color.rgb2lab(rgb_image)
     lab_dem_image = np.dstack((dem_image, lab_image))
 
-    save_nmp_array(im_num, lab_dem_image, 'lab', f2)
+    save_nmp_array(im_num, lab_dem_image, 'lab', fw)
 
 
 def mask(im_num, image):
@@ -35,7 +29,7 @@ def mask(im_num, image):
     save_nmp_array(im_num, mask_image, 'mask')
 
 
-def hsi_transform(im_num, image, f2):
+def hsi_transform(im_num, image, fw):
     # Get the raw RGB values from the hdf5 image
     rgb = (list(image["georef_img"]["layers"]['visible']['array']))
     dem = (list(image["georef_img"]["layers"]['dem']['array']))
@@ -47,11 +41,11 @@ def hsi_transform(im_num, image, f2):
     hsi_image = color.rgb2hsv(rgb_image)
 
     hsi_image = np.dstack((dem_image, hsi_image))
-    save_nmp_array(im_num, hsi_image, 'hsi', f2)
+    save_nmp_array(im_num, hsi_image, 'hsi', fw)
 
 
 # Converts image to hsl colour space
-def hsl_transform(im_num, image, f2):
+def hsl_transform(im_num, image, fw):
     rgb = (list(image["georef_img"]["layers"]['visible']['array']))
     dem = (list(image["georef_img"]["layers"]['dem']['array']))
 
@@ -62,11 +56,11 @@ def hsl_transform(im_num, image, f2):
     hsl_image = matplotlib.colors.rgb_to_hsv(rgb_image)
 
     hsl_image = np.dstack((dem_image, hsl_image))
-    save_nmp_array(im_num, hsl_image, 'hsl', f2)
+    save_nmp_array(im_num, hsl_image, 'hsl', fw)
 
 
 # Performs independent component analysis on image
-def ica_transform(im_num, image, f2):
+def ica_transform(im_num, image, fw):
     rgb = (list(image["georef_img"]["layers"]['visible']['array']))
     dem = (list(image["georef_img"]["layers"]['dem']['array']))
 
@@ -82,11 +76,11 @@ def ica_transform(im_num, image, f2):
     image_restored = Ica.inverse_transform(image_ica)
 
     image_restored = np.dstack((dem_image, image_restored))
-    save_nmp_array(im_num, image_restored, 'ica', f2)
+    save_nmp_array(im_num, image_restored, 'ica', fw)
 
 
 # Performs principal component analysis on image
-def pca_transform(im_num, image, f2):
+def pca_transform(im_num, image, fw):
     rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
     dem_image = (list(image["georef_img"]["layers"]['dem']['array']))
 
@@ -100,7 +94,7 @@ def pca_transform(im_num, image, f2):
 
     # Combining rgb channels
     color_img = np.dstack((dem_image, img_r_pca, img_g_pca, img_b_pca))
-    save_nmp_array(im_num, color_img, 'pca', f2)
+    save_nmp_array(im_num, color_img, 'pca', fw)
 
 
 # Performs principal component analysis on individual colour channels
@@ -126,10 +120,10 @@ def comp_2d(image_2d):
     return recon_img_mat
 
 
-def save_nmp_array(im_num, new_image, folder, f2=0):
+def save_nmp_array(im_num, new_image, folder, fw=0):
     # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
     # We will also need a way of either saving the tree masks, or retrieving them from the original image
-    # np.save("../img/%s/%s%s" % (folder, im_num, '.npy'), new_image)
+    np.save("../img/%s/%s%s" % (folder, im_num, '.npy'), new_image)
     cv2.imwrite("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)
-    if f2!=0:
-        f2.write('img/' + folder + '/' + str (im_num) + '.png img/mask/' + str(im_num) + '.png' + "\n")
+    if fw!=0:
+        fw.write('img/' + folder + '/' + str (im_num) + '.png img/mask/' + str(im_num) + '.png' + "\n")

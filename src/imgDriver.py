@@ -8,10 +8,13 @@ from src import smallScale, medScale
 
 def main():
     dirpath = os.getcwd()
-    trainfcn = os.path.join(dirpath[:-3], 'trainfcn.txt')
+    fcncounter = 1
 
+    trainfcn = os.path.join(dirpath[:-3], 'trainfcn.txt')
+    evalfcn = os.path.join(dirpath[:-3], 'evalfcn.txt')
+    tfcn = open(trainfcn, "w+")
+    efcn = open(evalfcn, "w+")
     f = open("trainval.txt", "w+")
-    f2 = open(trainfcn, "w+")
 
     global image_data_root
     image_data_root = sys.argv[1]
@@ -21,34 +24,51 @@ def main():
     print("Performing transforms for: %s" % transforms)
 
     image_paths = get_image_paths()
+    max = len(image_paths)
 
     start_time = datetime.datetime.now()
     i = 0
     for image_path in image_paths:
+
+        if max >= 100:
+            if fcncounter > (len(image_paths)*0.1)/(len(image_paths)/100):
+                fw = tfcn
+            else:
+                fw = efcn
+        else:
+            if fcncounter > (len(image_paths)*0.1)/(len(image_paths)/max):
+                fw = tfcn
+            else:
+                fw = efcn
+
         image = get_annotated_image(image_path)
         if 'lab' in transforms:
-            smallScale.lab_transform(i, image, f2)
+            smallScale.lab_transform(i, image, fw)
         if 'hsi' in transforms:
-            smallScale.hsi_transform(i, image, f2)
+            smallScale.hsi_transform(i, image, fw)
         if 'hsl' in transforms:
-            smallScale.hsl_transform(i, image, f2)
+            smallScale.hsl_transform(i, image, fw)
         if 'pca' in transforms:
-            smallScale.pca_transform(i, image, f2)
+            smallScale.pca_transform(i, image, fw)
         if 'ica' in transforms:
-            smallScale.ica_transform(i, image, f2)
+            smallScale.ica_transform(i, image, fw)
         if 'hist_equal' in transforms:
-            medScale.hist_equal_transform(i, image, f2)
+            medScale.hist_equal_transform(i, image, fw)
         if 'mean_shift' in transforms:
-            medScale.mean_shift_transform(i, image, f2)
+            medScale.mean_shift_transform(i, image, fw)
         if 'edge_detector' in transforms:
-            medScale.edge_detector_transform(f2, i, image)
+            medScale.edge_detector_transform(fw, i, image)
         if 'rgb' in transforms:
-            medScale.rgb(f2, i, image)
+            medScale.rgb(fw, i, image)
         if 'mask' in transforms:
             smallScale.mask(i, image)
             f.write(str(i) + "\n")
         print("Completed image %d" % i)
         i += 1
+        if fcncounter == 100:
+            fcncounter = 0
+            max -= 100
+        fcncounter += 1
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
 def get_image_paths():
