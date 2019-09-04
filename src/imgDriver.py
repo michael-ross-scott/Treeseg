@@ -117,7 +117,6 @@ def perform_transforms(image_paths, im_root, i=0):
         if 'np' in save:
             nd_arr = rollup_images(array_of_images)
             writer.save_nmp_array(i, nd_arr, scale)
-            np.save("../img/%s/%s%s" % (scale, i, '.npy'), nd_arr)
 
         if 'npy_mask' in save:
             np.save("../img/%s/%s_mask%s" % (scale, i, '.npy'), list(image["georef_img"]["layers"]['tree_global_mask']['array']))
