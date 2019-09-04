@@ -85,22 +85,19 @@ def perform_transforms(image_paths, im_root, i=0):
         array_of_images = []
 
         # Folder name to write our images
-        scale = ""
+        folder = transforms
 
         if 'rgb' in transforms or 'dem' in transforms or 'nir' in transforms or 'ndvi' in transforms or \
                 'red' in transforms or 'reg' in transforms or 'ci' in transforms:
             array_of_images = norm_layers.get_layers(transforms, image, array_of_images)
-            scale += "norm"
 
         if 'hsl' in transforms or 'hsi' in transforms or 'lab' in transforms or 'ica' in transforms or \
                 'pca' in transforms:
             array_of_images = smallScale.run_transform(transforms, image, array_of_images)
-            scale += "small"
 
         if 'hist_equal' in transforms or 'mean_shift' in transforms or 'morph_closing' in transforms or \
                 'edge_detector' in transforms:
             array_of_images = medScale.run_transform(transforms, image, array_of_images)
-            scale += "med"
 
         if 'png_mask' in save:
             mask = norm_layers.mask(image)
@@ -108,18 +105,18 @@ def perform_transforms(image_paths, im_root, i=0):
 
         if "npy_mask" in save:
             mask = norm_layers.np_mask(image)
-            np.save("../img/%s/%s_mask%s" % (scale, i, '.npy'), mask)
+            np.save("../img/%s/%s_mask%s" % (folder, i, '.npy'), mask)
 
         if 'png' in save:
             nd_arr = rollup_images(array_of_images)
-            writer.save_im(i, nd_arr, scale)
+            writer.save_im(i, nd_arr, folder)
 
         if 'gif' in save:
-            writer.save_gif(i, array_of_images, scale)
+            writer.save_gif(i, array_of_images, folder)
 
         if 'npy' in save:
             nd_arr = rollup_images(array_of_images)
-            writer.save_nmp_array(i, nd_arr, scale)
+            writer.save_nmp_array(i, nd_arr, folder)
 
     return i
 
