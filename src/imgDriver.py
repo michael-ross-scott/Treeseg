@@ -43,8 +43,9 @@ save options:
     gif: save as gif
     png: save as png
     npy: save as numpy array
+    npy_mask: Save the mask as a separate npy array
 '''
-save = "png"
+save = "np npy_mask"
 
 def main():
 
@@ -116,6 +117,9 @@ def perform_transforms(image_paths, im_root, i=0):
         if 'np' in save:
             nd_arr = rollup_images(array_of_images)
             writer.save_nmp_array(i, nd_arr, scale)
+
+        if 'npy_mask' in save:
+            np.save("../img/%s/%s_mask%s" % (scale, i, '.npy'), list(image["georef_img"]["layers"]['tree_global_mask']['array']))
     return i
 
 
@@ -158,6 +162,5 @@ def rollup_images(array_of_images):
     for i in range(1, len(array_of_images)):
         nd_arr = np.dstack((nd_arr, array_of_images[i]))
     return nd_arr
-
 
 main()
