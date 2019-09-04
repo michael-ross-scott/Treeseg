@@ -10,7 +10,6 @@ image_data_root1 = "/home/user/PycharmProjects/ApricotV2"
 # image_data_root2 = "/home/user/PycharmProjects/Selected"
 image_data_root2 = "/home/user/PycharmProjects/Selected001"
 
-
 # The transform options, these are denoted in a space-separated string
 '''
 transforms options: 
@@ -48,7 +47,6 @@ save options:
 save = "np npy_mask"
 
 def main():
-
     print("Performing transforms for: %s" % transforms)
 
     start_time = datetime.datetime.now()
@@ -66,7 +64,6 @@ def main():
         writer.write_all(i, train_split)
     elif "trainvail" in train_files:
         writer.write_trainval(i)
-
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
 
@@ -140,7 +137,7 @@ def get_image_paths(im_root):
     print("Dimensions: %s x %s" % (len(test[0]), len(test)))
 
     return image_paths
-
+  
 
 def get_annotated_image(im, im_root):
     """
@@ -163,4 +160,5 @@ def rollup_images(array_of_images):
         nd_arr = np.dstack((nd_arr, array_of_images[i]))
     return nd_arr
 
+  
 main()
