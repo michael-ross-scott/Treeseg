@@ -128,3 +128,16 @@ def mask(image):
 
     mask_image = mask_image + 1
     return mask_image
+
+
+def np_mask(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
+    mask_image = (list(image["georef_img"]["layers"]['tree_global_mask']['array']))
+    mask_image = np.asarray(mask_image)
+
+    return mask_image
+

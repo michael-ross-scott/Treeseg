@@ -17,14 +17,14 @@ transforms options:
     small_Scale = {hsi, lab, hsl, pca, ica}
     med_scale   = {mean_shift, hist_equal, edge_detector, morph_closing}
 '''
-transforms = "hist_equal ica morph_closing"
+transforms = "rgb"
 
 
 # Choose what type of files to write, one or the other
 '''
 File options:
     trainval: all image names are written to this file
-    all     : writes seperate train and val files, as well as trainval
+    all     : writes separate train and val files, as well as trainval
 '''
 train_files = ""
 
@@ -39,12 +39,14 @@ train_split = 0.7
 # Choose save options for image array
 '''
 save options:
-    gif: save as gif
-    png: save as png
-    npy: save as numpy array
+    gif: Save transform as gif
+    png: Save transform as png
+    npy: Save transform as numpy array
+    png_mask: Save the mask as a png 
     npy_mask: Save the mask as a separate npy array
 '''
-save = "np npy_mask"
+save = "npy npy_mask"
+
 
 def main():
     print("Performing transforms for: %s" % transforms)
@@ -83,40 +85,39 @@ def perform_transforms(image_paths, im_root, i=0):
         array_of_images = []
 
         # Folder name to write our images
-        scale = ""
+        folder = transforms
 
         if 'rgb' in transforms or 'dem' in transforms or 'nir' in transforms or 'ndvi' in transforms or \
                 'red' in transforms or 'reg' in transforms or 'ci' in transforms:
             array_of_images = norm_layers.get_layers(transforms, image, array_of_images)
-            scale += "norm"
 
         if 'hsl' in transforms or 'hsi' in transforms or 'lab' in transforms or 'ica' in transforms or \
                 'pca' in transforms:
             array_of_images = smallScale.run_transform(transforms, image, array_of_images)
-            scale += "small"
 
         if 'hist_equal' in transforms or 'mean_shift' in transforms or 'morph_closing' in transforms or \
                 'edge_detector' in transforms:
             array_of_images = medScale.run_transform(transforms, image, array_of_images)
-            scale += "med"
 
-        if 'mask' in transforms:
+        if 'png_mask' in save:
             mask = norm_layers.mask(image)
             writer.save_im(i, mask, "mask")
 
+        if "npy_mask" in save:
+            mask = norm_layers.np_mask(image)
+            np.save("../img/%s/%s_mask%s" % (folder, i, '.npy'), mask)
+
         if 'png' in save:
             nd_arr = rollup_images(array_of_images)
-            writer.save_im(i, nd_arr, scale)
+            writer.save_im(i, nd_arr, folder)
 
         if 'gif' in save:
-            writer.save_gif(i, array_of_images, scale)
+            writer.save_gif(i, array_of_images, folder)
 
-        if 'np' in save:
+        if 'npy' in save:
             nd_arr = rollup_images(array_of_images)
-            writer.save_nmp_array(i, nd_arr, scale)
+            writer.save_nmp_array(i, nd_arr, folder)
 
-        if 'npy_mask' in save:
-            np.save("../img/%s/%s_mask%s" % (scale, i, '.npy'), list(image["georef_img"]["layers"]['tree_global_mask']['array']))
     return i
 
 
