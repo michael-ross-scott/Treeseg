@@ -22,9 +22,12 @@ transforms = "rgb"
 
 # Choose what type of files to write, one or the other
 '''
-File options:
+File Save Options:
+    "" : does not save a file
     trainval: all image names are written to this file
-    all     : writes separate train and val files, as well as trainval
+    all : writes separate train and val files, as well as trainval. 
+    all_rand : writes separate train and val files, as well as trainval. Randomly shuffled for evaluation
+    all_fcn  : writes separate train and val files, as well as trainval. Taking every 10/100 images for evaluation 
 '''
 train_files = ""
 
@@ -69,6 +72,10 @@ def main():
 
     if "all" in train_files:
         writer.write_all(i, train_split)
+    elif "all_rand" in train_files:
+        writer.write_all_rand(i, train_split)
+    elif "all_fcn" in train_files:
+        writer.write_all(i, folder, "mask")
     elif "trainvail" in train_files:
         writer.write_trainval(i)
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))

@@ -82,11 +82,13 @@ def write_trainval(num_images):
     train_val.close()
 
 
-def write_all(num_images, train_split):
+def write_all_rand(num_images, train_split):
     """
     :param num_images: number of image names to write
+    :param train_split: split of images used to train/evaluate
     :return: None
     """
+
     upper = int(num_images * train_split)
     im_list = []
 
@@ -107,3 +109,43 @@ def write_all(num_images, train_split):
     val.close()
 
     write_trainval(num_images)
+
+
+def write_all(num_images, train_split):
+    """
+    :param num_images: number of image names to write
+    :param train_split: split of images used to train/evaluate
+    :return: None
+    """
+
+    upper = int(num_images * train_split)
+    im_list = []
+
+    for i in range(1, num_images + 1):
+        print(i)
+        im_list.append(i)
+
+    for i in range(0, upper + 1):
+        print(i)
+        train.write(str(im_list[i]) + '\n')
+    train.close()
+
+    for i in range(upper + 1, len(im_list)):
+        print(i)
+        val.write(str(im_list[i]) + "\n")
+    val.close()
+
+    write_trainval(num_images)
+
+
+def write_all_fcn(num_images, transform, mask):
+    """
+    :param num_images: number of image names to write
+    :param transform: path to the transform folder
+    :param mask: path to the mask folder
+    :return:
+    """
+    transform_path = "img/" + transform + "/"
+    mask_path = "img/" + mask + "/"
+
+    #TODO Charl needs to change this to work with his stuff
