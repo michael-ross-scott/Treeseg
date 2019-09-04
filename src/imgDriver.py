@@ -68,7 +68,7 @@ def main():
     i = perform_transforms(image_path1, image_data_root1, folder, i)
 
     image_path2 = get_image_paths(image_data_root2)
-    perform_transforms(image_path2, image_data_root2, folder, i)
+    i = perform_transforms(image_path2, image_data_root2, folder, i)
 
     if "all" in train_files:
         writer.write_all(i, train_split)

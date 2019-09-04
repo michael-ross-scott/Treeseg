@@ -145,7 +145,26 @@ def write_all_fcn(num_images, transform, mask):
     :param mask: path to the mask folder
     :return:
     """
-    transform_path = "img/" + transform + "/"
-    mask_path = "img/" + mask + "/"
+    remainder = num_images % 100
+    current = 1
 
-    #TODO Charl needs to change this to work with his stuff
+    for i in range(1, num_images + 1):
+        transform_path = "img/" + transform + "/" + i + ".png "
+        mask_path = "img/" + mask + "/" + i + ".png\n"
+        write_path = transform_path + mask_path
+        if num_images-i >= 100:
+            if current > (num_images * 0.1) / (num_images / 100):
+                train.write(write_path)
+            else:
+                val.write(write_path)
+        else:
+            if current > remainder * 0.1:
+                train.write(write_path)
+            else:
+                val.write(write_path)
+        if current == 100:
+            current = 1
+        current += 1
+
+        train.close()
+        val.close()
