@@ -49,18 +49,23 @@ save = "npy npy_mask"
 
 
 def main():
+
     print("Performing transforms for: %s" % transforms)
 
     start_time = datetime.datetime.now()
 
+    # Folder name to write images
+    folder = transforms.replace(" ", "_")
+    writer.create_transform_dir(folder)
+
     image_path = get_image_paths(image_data_root)
-    i = perform_transforms(image_path, image_data_root)
+    i = perform_transforms(image_path, image_data_root, folder)
 
     image_path1 = get_image_paths(image_data_root1)
-    i = perform_transforms(image_path1, image_data_root1, i)
+    i = perform_transforms(image_path1, image_data_root1, folder, i)
 
     image_path2 = get_image_paths(image_data_root2)
-    perform_transforms(image_path2, image_data_root2, i)
+    perform_transforms(image_path2, image_data_root2, folder, i)
 
     if "all" in train_files:
         writer.write_all(i, train_split)
@@ -69,11 +74,12 @@ def main():
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
 
-def perform_transforms(image_paths, im_root, i=0):
+def perform_transforms(image_paths, im_root, folder, i=0):
     """
     :param image_paths: paths to all the images
     :param im_root: Place where hdf5 file resides
     :param i: keeps track of images that have been written
+    :param folder: the place where the transforms will be written
     :return: i
     """
 
@@ -83,9 +89,6 @@ def perform_transforms(image_paths, im_root, i=0):
 
         # List of numpy images
         array_of_images = []
-
-        # Folder name to write our images
-        folder = transforms
 
         if 'rgb' in transforms or 'dem' in transforms or 'nir' in transforms or 'ndvi' in transforms or \
                 'red' in transforms or 'reg' in transforms or 'ci' in transforms:
