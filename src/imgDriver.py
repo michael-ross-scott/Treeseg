@@ -17,7 +17,7 @@ transforms options:
     small_Scale = {hsi, lab, hsl, pca, ica}
     med_scale   = {mean_shift, hist_equal, edge_detector, morph_closing}
 '''
-transforms = "hist_equal ica morph_closing"
+transforms = "rgb"
 
 
 # Choose what type of files to write, one or the other
@@ -45,6 +45,7 @@ save options:
     npy_mask: Save the mask as a separate npy array
 '''
 save = "np npy_mask"
+
 
 def main():
     print("Performing transforms for: %s" % transforms)
@@ -104,6 +105,10 @@ def perform_transforms(image_paths, im_root, i=0):
             mask = norm_layers.mask(image)
             writer.save_im(i, mask, "mask")
 
+        if "mask_np" in transforms:
+            mask = norm_layers.np_mask(image)
+            writer.save_nmp_array(i, mask, "mask")
+
         if 'png' in save:
             nd_arr = rollup_images(array_of_images)
             writer.save_im(i, nd_arr, scale)
@@ -115,8 +120,6 @@ def perform_transforms(image_paths, im_root, i=0):
             nd_arr = rollup_images(array_of_images)
             writer.save_nmp_array(i, nd_arr, scale)
 
-        if 'npy_mask' in save:
-            np.save("../img/%s/%s_mask%s" % (scale, i, '.npy'), list(image["georef_img"]["layers"]['tree_global_mask']['array']))
     return i
 
 
