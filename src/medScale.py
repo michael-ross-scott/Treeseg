@@ -1,21 +1,72 @@
 import cv2
 import numpy as np
-from os.path import relpath
-from os import makedirs
 import pymeanshift as pms
-import re
 
-def mean_shift_transform(im_num, image, f2):
-    # Get the raw RGB values from the hdf5 image
-    ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
+
+def run_transform(im_transform, image, ndarray):
+    """
+    :param im_transform: list of transforms that needs to be done
+    :param image: h5 image file
+    :param ndarray: list containing numpy images
+    :return: list containing numpy images
+    """
+
+    if 'hist_equal' in im_transform:
+        im = hist_equal_transform(image)
+        ndarray.append(im)
+    if 'mean_shift' in im_transform:
+        im = mean_shift_transform(image)
+        ndarray.append(im)
+    if 'edge_detector' in im_transform:
+        im = edge_detector_transform(image)
+        ndarray.append(im)
+    if 'morph_closing' in im_transform:
+        im = morph_closing_transform(image)
+        ndarray.append(im)
+    return ndarray
+
+
+def mean_shift_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
+    ndvi_image = (list(image["georef_img"]["layers"]['visible']['array']))
     np_image = np.asarray(ndvi_image)
 
-    # Convert to Mean Shift
     (mean_shift_image, labels_image, number_regions) = pms.segment(np_image, spatial_radius=1, range_radius=1, min_density=300)
-    save_nmp_array(im_num, mean_shift_image, 'mean_shift', f2)
+    return mean_shift_image
 
-def edge_detector_transform(f2, im_num, image, sigma=0.33):
-    # Get the raw RGB values from the hdf5 image
+
+def morph_closing_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
+    nir_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
+
+    np_image = np.asarray(nir_image)
+
+    # Produces binary image
+    th = cv2.adaptiveThreshold(np_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 115, 0)
+    th1 = np.invert(th)
+
+    # Removes noise
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 4))
+    morph_img = cv2.morphologyEx(th1, cv2.MORPH_CLOSE, kernel)
+
+    return morph_img
+
+
+def edge_detector_transform(image, sigma=0.33):
+    """
+    :param image: h5 image
+    :param sigma: value to tweak mean_shift transform
+    :return: numpy array
+    """
+
     nir_image = (list(image["georef_img"]["layers"]['nir']['array']))
     np_image = np.asarray(nir_image)
 
@@ -28,20 +79,19 @@ def edge_detector_transform(f2, im_num, image, sigma=0.33):
 
     edge_detector_image = cv2.Canny(np_image,lower,upper)
 
-    save_nmp_array(im_num, edge_detector_image, 'edge_detector', f2)
+    return edge_detector_image
 
-# Performs histogram equalization on nir
-def hist_equal_transform(im_num, image, f2):
+
+def hist_equal_transform(image):
+    """
+    :param image: h5 image
+    :return: numpy array
+    """
+
     ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
     np_image = np.asarray(ndvi_image)
 
     equal_img = cv2.equalizeHist(np_image)
 
-    save_nmp_array(im_num, equal_img, 'hist_equal', f2)
-    
-def save_nmp_array(im_num, new_image, folder, f2):
+    return equal_img
 
-    # Save the Lab image as a numpy array to preserve accuracy - Tensorflow will need to read in these images with numpy
-    # We will also need a way of either saving the tree masks, or retrieving them from the original image
-    cv2.imwrite("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)
-    f2.write('img/' + folder + '/' + str(im_num) + '.png img/mask/' + str(im_num) + '.png' + "\n")
