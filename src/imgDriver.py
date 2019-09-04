@@ -75,7 +75,7 @@ def main():
     elif "all_rand" in train_files:
         writer.write_all_rand(i, train_split)
     elif "all_fcn" in train_files:
-        writer.write_all(i, folder, "mask")
+        writer.write_all_fcn(i, folder, "mask")
     elif "trainvail" in train_files:
         writer.write_trainval(i)
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
