@@ -149,9 +149,11 @@ def write_all_fcn(num_images, transform, mask):
     current = 1
 
     for i in range(1, num_images + 1):
-        transform_path = "img/" + transform + "/" + i + ".png "
-        mask_path = "img/" + mask + "/" + i + ".png\n"
+        print(i)
+        transform_path = "img/" + transform + "/" + str(i) + ".png "
+        mask_path = "img/" + mask + "/" + str(i) + ".png\n"
         write_path = transform_path + mask_path
+        train_val.write(write_path)
         if num_images-i >= 100:
             if current > (num_images * 0.1) / (num_images / 100):
                 train.write(write_path)
@@ -163,8 +165,9 @@ def write_all_fcn(num_images, transform, mask):
             else:
                 val.write(write_path)
         if current == 100:
-            current = 1
+            current = 0
         current += 1
 
-        train.close()
-        val.close()
+    train.close()
+    val.close()
+    train_val.close()

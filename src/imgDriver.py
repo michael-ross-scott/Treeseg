@@ -26,10 +26,10 @@ File Save Options:
     "" : does not save a file
     trainval: all image names are written to this file
     all : writes separate train and val files, as well as trainval. 
-    all_rand : writes separate train and val files, as well as trainval. Randomly shuffled for evaluation
-    all_fcn  : writes separate train and val files, as well as trainval. Taking every 10/100 images for evaluation 
+    rand : writes separate train and val files, as well as trainval. Randomly shuffled for evaluation
+    fcn  : writes separate train and val files, as well as trainval. Taking every 10/100 images for evaluation 
 '''
-train_files = ""
+train_files = "all"
 
 
 # Choose training and evaluation split
@@ -72,9 +72,9 @@ def main():
 
     if "all" in train_files:
         writer.write_all(i, train_split)
-    elif "all_rand" in train_files:
+    elif "rand" in train_files:
         writer.write_all_rand(i, train_split)
-    elif "all_fcn" in train_files:
+    elif "fcn" in train_files:
         writer.write_all_fcn(i, folder, "mask")
     elif "trainvail" in train_files:
         writer.write_trainval(i)
@@ -115,7 +115,7 @@ def perform_transforms(image_paths, im_root, folder, i=0):
 
         if "npy_mask" in save:
             mask = norm_layers.np_mask(image)
-            np.save("../img/%s/%s_mask%s" % (folder, i, '.npy'), mask)
+            np.save("../img/%s/%s_mask%s" % ("mask", i, '.npy'), mask)
 
         if 'png' in save:
             nd_arr = rollup_images(array_of_images)
