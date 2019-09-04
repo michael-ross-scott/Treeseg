@@ -24,7 +24,7 @@ transforms = "rgb"
 '''
 File options:
     trainval: all image names are written to this file
-    all     : writes seperate train and val files, as well as trainval
+    all     : writes separate train and val files, as well as trainval
 '''
 train_files = ""
 
@@ -45,7 +45,7 @@ save options:
     png_mask: Save the mask as a png 
     npy_mask: Save the mask as a separate npy array
 '''
-save = "np npy_mask"
+save = "npy npy_mask"
 
 
 def main():
@@ -117,7 +117,7 @@ def perform_transforms(image_paths, im_root, i=0):
         if 'gif' in save:
             writer.save_gif(i, array_of_images, scale)
 
-        if 'np' in save:
+        if 'npy' in save:
             nd_arr = rollup_images(array_of_images)
             writer.save_nmp_array(i, nd_arr, scale)
 
