@@ -108,7 +108,7 @@ def perform_transforms(image_paths, im_root, i=0):
 
         if "npy_mask" in save:
             mask = norm_layers.np_mask(image)
-            writer.save_nmp_array(i, mask, "mask")
+            np.save("../img/%s/%s_mask%s" % (scale, i, '.npy'), mask)
 
         if 'png' in save:
             nd_arr = rollup_images(array_of_images)
