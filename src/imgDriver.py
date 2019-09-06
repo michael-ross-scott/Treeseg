@@ -25,7 +25,7 @@ transforms = "rgb"
 File Save Options:
     "" : does not save a file
     trainval: all image names are written to this file
-    all : writes separate train and val files, as well as trainval. 
+    all : writes separate train and val files, as well as trainval. This is unshuffled.
     rand : writes separate train and val files, as well as trainval. Randomly shuffled for evaluation
     fcn  : writes separate train and val files, as well as trainval. Taking every 10/100 images for evaluation 
 '''
