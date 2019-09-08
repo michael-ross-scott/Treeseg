@@ -5,6 +5,29 @@ import imageio
 import os
 import random
 
+# Keeps track of image names for the neural network
+'''
+Files:
+    trainval: all image names are written to this file
+    train   : writes seperate train and validation as well as trainval
+    val:    : images that are for validation are written to this file
+'''
+
+train_val = open("trainval.txt", "w")
+train = open("train.txt", "w")
+val = open("val.txt", "w")
+
+
+def create_transform_dir(folder):
+    """
+    :param folder: the directory that image transforms will be written to
+    :return: None
+    """
+    try:
+        os.mkdir("../img/" + folder + "/")
+    except:
+        print("Directory already exists")
+
 
 def save_im(im_num, new_image, folder):
     """
@@ -23,7 +46,7 @@ def save_gif(im_num, new_image, folder):
     :param im_num: filename
     :param new_image: numpy file to be written
     :param folder: folder where it needs to be written
-    :return: outputs gif file of nd_arr
+    :return: None
     """
 
     im_list = []
@@ -32,7 +55,10 @@ def save_gif(im_num, new_image, folder):
         im_list.append(im)
 
     print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.gif'))
-    imageio.mimsave("../img/%s/%s%s" % (folder, im_num, '.png'), new_image)
+
+    im_path = "../img/" + folder + "/" + str(im_num) + ".gif"
+    imageio.mimsave(im_path, im_list)
+    os.system("convert " + im_path + " -coalesce " + im_path)
 
 
 def save_nmp_array(im_num, new_image, folder):
@@ -40,40 +66,28 @@ def save_nmp_array(im_num, new_image, folder):
     :param im_num: filename
     :param new_image: numpy file to be written
     :param folder: folder where it needs to be written
-    :return: outputs numpy file
+    :return: None
     """
-
     print("Saving image", im_num, "to image path", "../img/%s/%s%s" % (folder, im_num, '.npy'))
     np.save("../img/%s/%s%s" % (folder, im_num, '.npy'), new_image)
 
 
-def write_trainval(num_images, folder=os.getcwd()):
+def write_trainval(num_images):
     """
     :param num_images: number of image names to write
-    :param folder: path where image files are written
-    :trainval: file used to keep track of all image paths
-    :return: files with training and evaluation image names
+    :return: None
     """
-    train_val = open(folder + "trainval.txt", "w")
-
     for i in range(1, num_images + 1):
         train_val.write(str(i)+'\n')
     train_val.close()
 
 
-def write_all(num_images, train_split, shuffle=True, folder=os.getcwd()):
+def write_all_rand(num_images, train_split):
     """
     :param num_images: number of image names to write
-    :param train_split: percentage of data dedicated to training
-    :param shuffle: boolean that decides whether training data needs to be randomly arranged
-    :param folder: path where image files are written
-    :train: file that keeps track of all the training image paths
-    :val: file that keeps track of all the evaluation image paths
-    :return: files with training and evaluation image names
+    :param train_split: split of images used to train/evaluate
+    :return: None
     """
-
-    train = open(folder + "train.txt", "w")
-    val = open(folder + "val.txt", "w")
 
     upper = int(num_images * train_split)
     im_list = []
@@ -82,8 +96,7 @@ def write_all(num_images, train_split, shuffle=True, folder=os.getcwd()):
         print(i)
         im_list.append(i)
 
-    if shuffle:
-        random.shuffle(im_list)
+    random.shuffle(im_list)
 
     for i in range(0, upper + 1):
         print(i)
@@ -96,3 +109,65 @@ def write_all(num_images, train_split, shuffle=True, folder=os.getcwd()):
     val.close()
 
     write_trainval(num_images)
+
+
+def write_all(num_images, train_split):
+    """
+    :param num_images: number of image names to write
+    :param train_split: split of images used to train/evaluate
+    :return: None
+    """
+
+    upper = int(num_images * train_split)
+    im_list = []
+
+    for i in range(1, num_images + 1):
+        print(i)
+        im_list.append(i)
+
+    for i in range(0, upper + 1):
+        print(i)
+        train.write(str(im_list[i]) + '\n')
+    train.close()
+
+    for i in range(upper + 1, len(im_list)):
+        print(i)
+        val.write(str(im_list[i]) + "\n")
+    val.close()
+
+    write_trainval(num_images)
+
+
+def write_all_fcn(num_images, transform, mask):
+    """
+    :param num_images: number of image names to write
+    :param transform: path to the transform folder
+    :param mask: path to the mask folder
+    :return:
+    """
+    remainder = num_images % 100
+    current = 1
+
+    for i in range(1, num_images + 1):
+        print(i)
+        transform_path = "img/" + transform + "/" + str(i) + ".png "
+        mask_path = "img/" + mask + "/" + str(i) + ".png\n"
+        write_path = transform_path + mask_path
+        train_val.write(write_path)
+        if num_images-i >= 100:
+            if current > (num_images * 0.1) / (num_images / 100):
+                train.write(write_path)
+            else:
+                val.write(write_path)
+        else:
+            if current > remainder * 0.1:
+                train.write(write_path)
+            else:
+                val.write(write_path)
+        if current == 100:
+            current = 0
+        current += 1
+
+    train.close()
+    val.close()
+    train_val.close()

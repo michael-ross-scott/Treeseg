@@ -25,13 +25,13 @@ def run_transform(im_transform, image, ndarray):
         ndarray.append(im)
     return ndarray
 
-
+  
 def mean_shift_transform(image):
     """
     :param image: h5 image
     :return: numpy array
     """
-
+    
     ndvi_image = (list(image["georef_img"]["layers"]['visible']['array']))
     np_image = np.asarray(ndvi_image)
 
@@ -66,7 +66,6 @@ def edge_detector_transform(image, sigma=0.33):
     :param sigma: value to tweak mean_shift transform
     :return: numpy array
     """
-
     nir_image = (list(image["georef_img"]["layers"]['nir']['array']))
     np_image = np.asarray(nir_image)
 
@@ -78,7 +77,6 @@ def edge_detector_transform(image, sigma=0.33):
     upper = int(min(255, (1.0 + sigma) * v))
 
     edge_detector_image = cv2.Canny(np_image,lower,upper)
-
     return edge_detector_image
 
 
@@ -87,11 +85,8 @@ def hist_equal_transform(image):
     :param image: h5 image
     :return: numpy array
     """
-
     ndvi_image = (list(image["georef_img"]["layers"]['ndvi']['array']))
     np_image = np.asarray(ndvi_image)
 
     equal_img = cv2.equalizeHist(np_image)
-
     return equal_img
-
