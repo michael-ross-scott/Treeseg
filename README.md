@@ -1,42 +1,30 @@
 # Treeseg
 
-To set up venv in Ubuntu:
-
-`virtualenv venv && source venv/bin/activate && pip install -r requirements.txt`
-
-## Usage
-Data to be processed should be next to this repo.
-
-We assume data to be in `.h5` format, and a `manifest.h5` in the root of the source directory to enumerate 
-filenames.
-
-Assuming this repo is `/home/fergus/Treeseg`.
-
-CLI arg1: Path to data, e.g. `"/home/fergus/apricot"`.
-
-CLI arg2: Transforms to process, one or many of:
-
-`lab hsi edge_detector mean_shift hsl hist_equal pca ica`
-
-Output images will be stored in `img/`, keeping their original structure
-
 ## Small scale transforms
 
 - Lab colorspace
 - HSI colorspace
+- HSL colorspace
+- PCA on RGB
+- ICA on RGB
 
-Implemented using `skimage`, saved into a numpy array binary format for import into TensorFlow.
+Implemented using `skimage`, `OpenCV`, `Matplotlib` & `sklearn`; saved into a numpy array binary format for import into TensorFlow.
 
-## Troubleshooting
+## Medium scale transforms
 
-If you run into this [issue](https://github.com/pandas-dev/pandas/issues/19666):
+- Mean Shift
+- Histogram Equalization
+- Thresholding and Morphological closing
+- Edge Detection
 
-`pip uninstall h5py` 
-</br>
-
-`pip install h5py==2.8.0rc1`
+Implemented using `OpenCV` and [Mean Shift C++](https://github.com/fjean/pymeanshift)
 
 ## Prerequisites
+
+To set up venv in Ubuntu:
+
+`virtualenv venv && source venv/bin/activate && pip install -r requirements.txt`
+
 ### Pymeanshift Installation
 
 0. If on windows download Visual Studio C++ build tools.
@@ -50,3 +38,40 @@ If you run into this [issue](https://github.com/pandas-dev/pandas/issues/19666):
     * Windows (at the command prompt, from an admin account): python setup.py install
 
 3.  If everything went fine, it should be possible to import the pymeanshift module in Python code. The module provides a function named segment and a class named Segmenter.
+
+## Usage
+Data to be processed should be next to this repo.
+
+We assume data to be in `.h5` format, and a `manifest.h5` in the root of the source directory to enumerate 
+filenames.
+
+Output images will be stored in `img/`, keeping their original structure
+
+### Running ImgDriver
+
+Modify strings inputted into imgDriver to achieve desired functionality
+
+**image_data_root:** path to data
+</br>
+**transforms:** Transforms or various image layers
+</br>
+**train_files:** Files to save paths of images written. Also used to denote which images are used to train Neural Networks
+</br>
+**transform_save_options:** File format to save transforms (PNG, npy or GIF)
+</br>
+**mask_save_options:** File format to save ground truth of images (PNG or npy)
+
+
+## Troubleshooting
+### Known Windows Issue 1:
+
+If you run into this [issue](https://github.com/pandas-dev/pandas/issues/19666):
+
+`pip uninstall h5py` 
+</br>
+
+`pip install h5py==2.8.0rc1`
+
+### Known Windows Issue 2:
+
+Windows works using `\` to denote paths, whilst Linux uses `/`. Convert these to suit your native file system
