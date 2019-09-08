@@ -32,7 +32,7 @@ File Save Options:
     
 ONLY 1 can be used
 '''
-train_files = "all"
+train_files = "rand"
 
 
 # Choose save options for image array
@@ -51,7 +51,7 @@ mask save options:
     png_mask: Save the mask as a png 
     npy_mask: Save the mask as a separate npy array
 '''
-mask_save = ""
+mask_save = "png_mask"
 
 
 def main():

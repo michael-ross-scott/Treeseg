@@ -149,7 +149,6 @@ def write_all_fcn(num_images, transform, mask):
     current = 1
 
     for i in range(1, num_images + 1):
-        print(i)
         transform_path = "img/" + transform + "/" + str(i) + ".png "
         mask_path = "img/" + mask + "/" + str(i) + ".png\n"
         write_path = transform_path + mask_path
