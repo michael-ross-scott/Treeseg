@@ -4,11 +4,12 @@ import datetime
 import numpy as np
 from src import norm_layers, smallScale, medScale, writer
 
+
 # absolute path to the data
 image_data_root = "/home/user/PycharmProjects/Apricot"
 image_data_root1 = "/home/user/PycharmProjects/ApricotV2"
-# image_data_root2 = "/home/user/PycharmProjects/Selected"
 image_data_root2 = "/home/user/PycharmProjects/Selected001"
+
 
 # The transform options, these are denoted in a space-separated string
 '''
@@ -23,32 +24,34 @@ transforms = "rgb"
 # Choose what type of files to write, one or the other
 '''
 File Save Options:
-    "" : does not save a file
+    ""      : does not save a file
     trainval: all image names are written to this file
     all : writes separate train and val files, as well as trainval. This is unshuffled.
     rand : writes separate train and val files, as well as trainval. Randomly shuffled for evaluation
     fcn  : writes separate train and val files, as well as trainval. Taking every 10/100 images for evaluation 
+    
+ONLY 1 can be used
 '''
 train_files = "all"
 
 
-# Choose training and evaluation split
-'''
-train_split: double ~ (0,1) specifies how much data to train and how much to test
-'''
-train_split = 0.7
-
-
 # Choose save options for image array
 '''
-save options:
-    gif: Save transform as gif
-    png: Save transform as png
-    npy: Save transform as numpy array
+transform save options:
+    ""      : does not save a file
     png_mask: Save the mask as a png 
     npy_mask: Save the mask as a separate npy array
 '''
-save = "npy npy_mask"
+transform_save = "npy npy_mask"
+
+
+# Choose save options for ground truth
+'''
+mask save options:
+    png_mask: Save the mask as a png 
+    npy_mask: Save the mask as a separate npy array
+'''
+mask_save = ""
 
 
 def main():
@@ -71,12 +74,12 @@ def main():
     i = perform_transforms(image_path2, image_data_root2, folder, i)
 
     if "all" in train_files:
-        writer.write_all(i, train_split)
+        writer.write_all(i)
     elif "rand" in train_files:
-        writer.write_all_rand(i, train_split)
+        writer.write_all_rand(i)
     elif "fcn" in train_files:
         writer.write_all_fcn(i, folder, "mask")
-    elif "trainvail" in train_files:
+    elif "trainval" in train_files:
         writer.write_trainval(i)
     print("Time Taken: %ss" % (round((datetime.datetime.now() - start_time).total_seconds())))
 
@@ -109,22 +112,22 @@ def perform_transforms(image_paths, im_root, folder, i=0):
                 'edge_detector' in transforms:
             array_of_images = medScale.run_transform(transforms, image, array_of_images)
 
-        if 'png_mask' in save:
+        if 'png_mask' in mask_save:
             mask = norm_layers.mask(image)
             writer.save_im(i, mask, "mask")
 
-        if "npy_mask" in save:
+        if "npy_mask" in mask_save:
             mask = norm_layers.np_mask(image)
             np.save("../img/%s/%s_mask%s" % ("mask", i, '.npy'), mask)
 
-        if 'png' in save:
+        if 'png' in transform_save:
             nd_arr = rollup_images(array_of_images)
             writer.save_im(i, nd_arr, folder)
 
-        if 'gif' in save:
+        if 'gif' in transform_save:
             writer.save_gif(i, array_of_images, folder)
 
-        if 'npy' in save:
+        if 'npy' in transform_save:
             nd_arr = rollup_images(array_of_images)
             writer.save_nmp_array(i, nd_arr, folder)
 

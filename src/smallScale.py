@@ -4,7 +4,6 @@ import cv2
 from sklearn.decomposition import FastICA
 import matplotlib
 from matplotlib import colors
-from PIL import Image
 
 
 def run_transform(im_transform, image, ndarray):
@@ -38,13 +37,11 @@ def hsi_transform(image):
     :param image: h5 image
     :return: numpy array
     """
+    rgb_image = (list(image["georef_img"]["layers"]['visible']['array']))
+    rgb_image = np.asarray(rgb_image)
+
     hsi_image = color.rgb2hsv(rgb_image)
     return hsi_image
-    # Convert to lab
-    lab_image = color.rgb2lab(rgb_image)
-    lab_dem_image = np.dstack((dem_image, lab_image))
-
-    save_nmp_array(im_num, lab_dem_image, 'lab', f2)
     
     
 def lab_transform(image):

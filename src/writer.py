@@ -82,7 +82,7 @@ def write_trainval(num_images):
     train_val.close()
 
 
-def write_all_rand(num_images, train_split):
+def write_all_rand(num_images, train_split=0.7):
     """
     :param num_images: number of image names to write
     :param train_split: split of images used to train/evaluate
@@ -111,7 +111,7 @@ def write_all_rand(num_images, train_split):
     write_trainval(num_images)
 
 
-def write_all(num_images, train_split):
+def write_all(num_images, train_split=0.7):
     """
     :param num_images: number of image names to write
     :param train_split: split of images used to train/evaluate
