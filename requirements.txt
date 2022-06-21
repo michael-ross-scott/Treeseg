@@ -1,6 +1,6 @@
 imageio
 h5py==2.9.0
-numpy==1.16.1
+numpy==1.22.0
 pandas==0.24.1
 matplotlib
 opencv-python
